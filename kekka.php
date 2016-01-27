@@ -24,16 +24,15 @@ try{
   // $message = '';
   
   if(isset($_POST) && !empty($_POST)){
-      var_dump("ok");
       $sql = 'INSERT INTO `results`(`id`, `result`, `years`, `date`, `gameid`) 
          VALUES (null,"'.$_POST['result'].'","'.$_POST['years'].'",now(),'.$_POST['id'].')';
-      var_dump($sql);
       $stmt=$dbh->prepare($sql);
       $stmt->execute();
+      $id=$_POST['id'];
   }
 
 
-  $sql = 'SELECT * FROM `results` WHERE 1 ORDER BY `id` DESC';
+  $sql = 'SELECT * FROM `results` WHERE gameid = '.$id.' ORDER BY `id` DESC';
   $stmt = $dbh->prepare($sql);
   $stmt->execute();
   $posts = array();
@@ -73,7 +72,7 @@ try{
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
               </button>
-              <a class="navbar-brand" href="#page-top"><span class="strong-title"><i class="fa fa-sun-o"></i>SunFriend!掲示版!結果ページ!</span></a>
+              <a class="navbar-brand" href="#page-top"><span class="strong-title"><i class="fa fa-sun-o"></i>SunFriend!実況掲示板!</span></a>
           </div>
           <!-- Collect the nav links, forms, and other content for toggling -->
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
