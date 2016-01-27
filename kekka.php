@@ -1,5 +1,5 @@
 <?php
-
+try{
   //echo 'POST送信された！';
   //データベースに接続
   // ステップ1.db接続
@@ -14,98 +14,37 @@
 
   // 接続したDBオブジェクトで文字コードutf8を使うように指定
   $dbh->query('SET NAMES utf8');
-
-  //GET送信が行われたら編集処理を実行
-   //$action = $_GET['action'];
-   //var_dump($action);
   
-  //id,editname,editcommentの定義
-  $years = '';
-  $result = '';
-  $message = '';
-
-  //編集ボタンが押されたら編集処理を行う
-   //if(isset($_GET['action'])&& ($_GET['action'] == 'edit')){
-    //echo $_GET['action'];
-    // 編集したいデータを取得するSQL文を作成
-    //$sq = 'SELECT * FROM `posts` WHERE `id`= '.$_GET['id'];
-    //var_dump($sq);
-    //SQL文を実行
-    //$stmt=$dbh->prepare($sq);
-    //$stmt->execute();
-    //$rec = $stmt->fetch(PDO::FETCH_ASSOC);
-    //$editname = $rec['nickname'];
-    //$editcomment = $rec['comment'];
-    //$id = $rec['id'];
-    //echo $editname;
-    //echo $editcomment;
-   //}
-  //ゴミ箱ボタンが押されたら削除処理を行う
-   //if(isset($_GET['action'])&& ($_GET['action'] == 'delete')){
-    //echo $_GET['action'];
-    // 編集したいデータを取得するSQL文を作成
-    //$sq = 'SELECT * FROM `posts` WHERE `id`= '.$_GET['id'];
-    //$sq="DELETE FROM `posts` WHERE `id`=".$_GET['id'];
-    //var_dump($sq);
-    //SQL文を実行
-    //$stmt=$dbh->prepare($sq);
-    //$stmt->execute();
-    //echo $editname;
-    //echo $editcomment;
-   //}
-  //POST送信が行われたら、下記の処理を実行
-  //テストコメント
-  if(isset($_POST) && !empty($_POST)){
-    //if(isset($_POST['update'])){
-      //var_dump($_POST['id']);
-      //echo "ok";
-      //編集後データ入力SQL文
-      //$sql = "UPDATE `posts` SET `nickname`='".$_POST['nickname']."',`comment`='".$_POST['comment']."',`created`=now() WHERE `id`=".$_POST['id'];
-      //$sql = "UPDATE `posts` SET `nickname`= '".$_POST['nickname']."',`comment`= '".$_POST['comment']."',`created`=now() WHERE `id`=".$_POST['id'];
-      //SQL文実行
-      //$stmt=$dbh->prepare($sql);
-      //$stmt->execute();
-    //}else{
-    //SQL文作成(INSERT文)
-    //$sql = "INSERT INTO `posts`(`result`, `years`, `date`,'message') ";
-    //$sql .="VALUES ('".$_POST['result']."','".$_POST['years']."',now(),'".$_POST['message']."')";
-    $sql = "INSERT INTO `games`(`result`, `years`, `date`) ";
-    $sql .="VALUES ('".$_POST['result']."','".$_POST['years']."',now())";
-    
-    var_dump($sql);
-    //INSERT文実行
-    $stmt=$dbh->prepare($sql);
-    $stmt->execute();
-  //}
+  $id ='';
+  if (isset($_GET)&&!empty($_GET)) {
+    $id = $_GET['id'];
   }
-  //SQL文作成(SELECT文)
-  $sql = 'SELECT * FROM `games` ORDER BY `date` DESC';
+  // $years = '';
+  // $result = '';
+  // $message = '';
   
-  //SQL文実行
+  if(isset($_POST) && !empty($_POST)){
+      var_dump("ok");
+      $sql = 'INSERT INTO `results`(`id`, `result`, `years`, `date`, `gameid`) 
+         VALUES (null,"'.$_POST['result'].'","'.$_POST['years'].'",now(),'.$_POST['id'].')';
+      var_dump($sql);
+      $stmt=$dbh->prepare($sql);
+      $stmt->execute();
+  }
+
+
+  $sql = 'SELECT * FROM `results` WHERE 1 ORDER BY `id` DESC';
   $stmt = $dbh->prepare($sql);
   $stmt->execute();
-
   $posts = array();
-
-  //var_dump($stmt);
   while(1){
-
-    //実行結果として得られたデータを表示
-    $rec = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if($rec == false){
-      break;
-    }
-
-    $posts[]=$rec;
-    // echo $rec['id'];
-    // echo $rec['nickname'];
-    // echo $rec['comment'];
-    // echo $rec['created'];
-
-
+      $rec = $stmt->fetch(PDO::FETCH_ASSOC);
+      if($rec == false){
+          break;
+      }
+      $posts[]=$rec;
   }
-    //データベースから切断
+
     $dbh=null;
 ?>
 
@@ -124,8 +63,8 @@
 
 </head>
 <body>
-  <nav class="navbar navbar-default navbar-fixed-top">
-      <div class="container">
+  <nav class="navbar navbar-default navbar-fixed-top"> 
+      <div class="container"> 
           <!-- Brand and toggle get grouped for better mobile display -->
           <div class="navbar-header page-scroll">
               <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
@@ -163,29 +102,30 @@
 
     <form action="kekka.php" method="post">
       <div class="form-group">
-            <h5>学年</h5>
+            <h5>学年(何か書いてね)</h5>
             <div class="input-group">
               <input type="text" name="years" class="form-control"
-                       id="validate-text" placeholder="学年" value='<?php echo $years; ?>' required>
+                       id="validate-text" placeholder="学年" required>
 
               <span class="input-group-addon danger"><span class="glyphicon glyphicon-remove"></span></span>
             </div>
             
       </div>
       <div class="form-group">
-            <h5>結果(4文字以上入力してね)</h5>
-            <div class="input-group" data-validate="length" data-length="4">  
+            <h5>結果(何か入力してね)</h5>
+            <div class="input-group" data-validate="length" data-length="1">  
               <textarea type="text" class="form-control" name="result" id="validate-length" placeholder="結果 ex.ファイナルイン!" required></textarea>
               <span class="input-group-addon danger"><span class="glyphicon glyphicon-remove"></span></span>
             </div>
       </div>
       <!--<?php if($editname == ''){ ?>-->
       <h5>実況投稿!</h5>
+      <input type="hidden" name="id" value=<?php echo $id; ?>>
       <button type="submit"  name='report' class="btn btn-primary col-xs-12" disabled>実況する!</button>
       <!--<h5>応援ボタン!</h5>
       <button type="submit"  name='cheer' class="btn btn-primary col-xs-12" disabled>応援する!</button>
-      <!--<?php }else{ ?>
-      <input type="hidden" name="id" value="<?php echo $id?>">
+      // <!--<?php }else{ ?>
+      // <input type="hidden" name="id" value="<?php echo $id?>">
       <button type="submit" name="update" class="btn btn-primary col-xs-12" disabled>応援する!</button>
       <?php } ?>-->
     </form>
@@ -260,6 +200,7 @@
 
 </body>
 </html>
-
-
+<?php }catch(Excepton $e){
+  echo "サーバーエラーが生じております。sunfriend2016@gamil.comまでご連絡ください。";
+} ?>
 
