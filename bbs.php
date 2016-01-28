@@ -31,10 +31,14 @@ try{
          $sql = 'UPDATE `names` SET `gamename`="'.$_POST['gamename'].'",gameday="'.$_POST['gameday'].'" WHERE `gameid`='.$_POST['id'];
          $stmt = $dbh->prepare($sql);
          $stmt -> execute();
-      }else{
+      }elseif (($_POST['gamename']!='')&&($_POST['gameday']!='')) {
          $sql = 'INSERT INTO `names`(`gameid`, `gamename`, `gameday`) VALUES (null,"'.$_POST['gamename'].'","'.$_POST['gameday'].'")';
          $stmt=$dbh->prepare($sql);
          $stmt->execute();
+         $_POST['gamename']=false;
+         $_POST['gameday']=false;
+
+         header('Location: bbs.php');
       }
   }
 
@@ -49,7 +53,6 @@ try{
       }
        $sun[] = $rec; 
     }
-  // header('Location: bbs2.php');
 
   $dbh = null;
 
@@ -84,20 +87,20 @@ try{
           </div>
           <!-- Collect the nav links, forms, and other content for toggling -->
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <!--   <ul class="nav navbar-nav navbar-right">
-                  <li class="hidden">
-                      <a href="#page-top"></a>
-                  </li>
+              <ul class="nav navbar-nav navbar-right">
+                  <!-- <li class="hidden">
+                      <a href="bbs.php">実況掲示板TOPへ</a>
+                  </li> -->
                   <li class="page-scroll">
-                      <a href="#portfolio">Portfolio</a>
+                      <a href="bbs.php">実況掲示板TOPへ</a>
                   </li>
-                  <li class="page-scroll">
+                  <!-- li class="page-scroll">
                       <a href="#about">About</a>
                   </li>
                   <li class="page-scroll">
                       <a href="#contact">Contact</a>
-                  </li>
-              </ul> -->
+                  </li> -->
+              </ul>
           </div>
           <!-- /.navbar-collapse -->
       </div>
@@ -146,7 +149,7 @@ try{
 
             <div class="timeline-entry-inner">
                 <a href="kekka.php?id=<?php echo $post['gameid']; ?>">
-                <div class="timeline-icon bg-success">
+                <div class="timeline-icon bg-info">
                     <i class="entypo-feather"></i>
                     <i class="fa fa-play-circle"></i>
                 </div>
