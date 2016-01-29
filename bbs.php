@@ -27,18 +27,20 @@ try{
  }
 
  if(isset($_POST)&&!empty($_POST)){
-     if(isset($_POST['update'])){
-         $sql = 'UPDATE `names` SET `gamename`="'.$_POST['gamename'].'",gameday="'.$_POST['gameday'].'" WHERE `gameid`='.$_POST['id'];
-         $stmt = $dbh->prepare($sql);
-         $stmt -> execute();
-      }elseif (($_POST['gamename']!='')&&($_POST['gameday']!='')) {
-         $sql = 'INSERT INTO `names`(`gameid`, `gamename`, `gameday`) VALUES (null,"'.$_POST['gamename'].'","'.$_POST['gameday'].'")';
-         $stmt=$dbh->prepare($sql);
-         $stmt->execute();
-         $_POST['gamename']=false;
-         $_POST['gameday']=false;
+     if ($_POST['key']=='sun') {
+         if(isset($_POST['update'])){
+             $sql = 'UPDATE `names` SET `gamename`="'.$_POST['gamename'].'",gameday=now() WHERE `gameid`='.$_POST['id'];
+             $stmt = $dbh->prepare($sql);
+             $stmt -> execute();
+          }elseif (($_POST['gamename']!='')&&($_POST['gameday']!='')) {
+            $sql = 'INSERT INTO `names`(`gameid`, `gamename`, `gameday`) VALUES (null,"'.$_POST['gamename'].'",now())';
+            $stmt=$dbh->prepare($sql);
+            $stmt->execute();
+         // $_POST['gamename']=false;
+         // $_POST['gameday']=false;
 
-         header('Location: bbs.php');
+             header('Location: bbs.php');
+          }
       }
   }
 
@@ -124,7 +126,7 @@ try{
       <div class="form-group">
           <h5>試合日</h5>
             <div class="input-group" data-validate="length" data-length="4">
-              <input type="text" class="form-control" name="gameday" id="validate-length" placeholder="試合日 ex.2014/10/08" value="<?php echo $day; ?>" required></textarea>
+              <input type="text" class="form-control" name="key" id="validate-length" placeholder="投稿キー、ヒントはないぜ" required></textarea>
               <span class="input-group-addon danger"><span class="glyphicon glyphicon-remove"></span></span>
             </div>
       </div>
@@ -156,15 +158,15 @@ try{
 
                 <div class="timeline-label">
                     <h2><a href="#"><?php echo $post['gamename']; ?></a> 
-                      <!--<?php
-                          //一旦日時型に変換
-                          //$created = strtotime($post['created']);
+                      <?php
+                          一旦日時型に変換
+                          $gameday = strtotime($post['gameday']);
 
-                          //書式を変換
-                          //$created = date('Y/m/d',$created);                          
-                      ?>-->
+                          書式を変換
+                          $gameday = date('Y/m/d',$created);                          
+                      ?>
 
-                      <span><?php echo $post['gameday'];?></span>
+                      <span><?php echo $gameday;?></span>
                       <a href="bbs.php?action=edit&id=<?php echo $post['gameid'];?>"><i class="fa fa-pencil-square-o"></i>
                     </h2>
                     <!--<a href="bbs.php?action=edit&id=<?php //echo $post['id'];?>"><i class="fa fa-pencil-square-o"></i>-->

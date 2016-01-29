@@ -29,6 +29,8 @@ try{
       $stmt=$dbh->prepare($sql);
       $stmt->execute();
       $id=$_POST['id'];
+
+      header('Location: kekka.php?id=');
   }
 
 
@@ -72,23 +74,23 @@ try{
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
               </button>
-              <a class="navbar-brand" href="#page-top"><span class="strong-title"><i class="fa fa-sun-o"></i>SunFriend!実況掲示板!</span></a>
+              <a class="navbar-brand" href="bbs.php"><span class="strong-title"><i class="fa fa-sun-o"></i>SunFriend!実況掲示板!</span></a>
           </div>
           <!-- Collect the nav links, forms, and other content for toggling -->
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
               <ul class="nav navbar-nav navbar-right">
-<!--                   <li class="hidden">
+                  <li class="hidden">
                       <a href="#page-top"></a>
                   </li>
                   <li class="page-scroll">
-                      <a href="#portfolio">Portfolio</a>
-                  </li>
+                      <a href="bbs.php">実況掲示板TOPへ</a>
+                  <!-- </li>
                   <li class="page-scroll">
                       <a href="#about">About</a>
                   </li>
                   <li class="page-scroll">
-                      <a href="#contact">Contact</a>
-                  </li> -->
+                      <a href="#contact">Contact</a> -->
+                  </li>
               </ul>
           </div>
           <!-- /.navbar-collapse -->
