@@ -24,13 +24,14 @@ try{
   // $message = '';
   
   if(isset($_POST) && !empty($_POST)){
-      $sql = 'INSERT INTO `results`(`id`, `result`, `years`, `date`, `gameid`) 
-         VALUES (null,"'.$_POST['result'].'","'.$_POST['years'].'",now(),'.$_POST['id'].')';
-      $stmt=$dbh->prepare($sql);
-      $stmt->execute();
-      $id=$_POST['id'];
-
-      header('Location: kekka.php?id=');
+      if($_POST['key']='sun'){
+          $sql = 'INSERT INTO `results`(`id`, `result`, `years`, `date`, `gameid`) 
+              VALUES (null,"'.$_POST['result'].'","'.$_POST['years'].'",now(),'.$_POST['id'].')';
+          $stmt=$dbh->prepare($sql);
+          $stmt->execute();
+          $id=$_POST['id'];
+          header('Location: kekka.php?id='.$id);
+      }
   }
 
 
@@ -45,6 +46,12 @@ try{
       }
       $posts[]=$rec;
   }
+
+  $sq = 'SELECT * FROM `names` WHERE gameid ='.$id;
+  $stmt=$dbh->prepare($sq);
+  $stmt->execute();
+  $rec = $stmt->fetch(PDO::FETCH_ASSOC);
+  $name = $rec['gamename'];
 
     $dbh=null;
 ?>
@@ -74,7 +81,7 @@ try{
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
               </button>
-              <a class="navbar-brand" href="bbs.php"><span class="strong-title"><i class="fa fa-sun-o"></i>SunFriend!実況掲示板!</span></a>
+              <a class="navbar-brand" href="bbs.php"><span class="strong-title"><i class="fa fa-sun-o"></i>SunFriend!実況掲示板!<?php echo $name; ?></span></a>
           </div>
           <!-- Collect the nav links, forms, and other content for toggling -->
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -84,13 +91,13 @@ try{
                   </li>
                   <li class="page-scroll">
                       <a href="bbs.php">実況掲示板TOPへ</a>
-                  <!-- </li>
-                  <li class="page-scroll">
-                      <a href="#about">About</a>
                   </li>
                   <li class="page-scroll">
-                      <a href="#contact">Contact</a> -->
+                      <a href="check.php">編集用ページへ</a>
                   </li>
+                  <!-- <li class="page-scroll">
+                      <a href="#contact">Contact</a>
+                  </li> -->
               </ul>
           </div>
           <!-- /.navbar-collapse -->
@@ -118,6 +125,16 @@ try{
               <textarea type="text" class="form-control" name="result" id="validate-length" placeholder="結果 ex.ファイナルイン!" required></textarea>
               <span class="input-group-addon danger"><span class="glyphicon glyphicon-remove"></span></span>
             </div>
+      </div>
+      <div class="form-group">
+            <h5>投稿キー</h5>
+            <div class="input-group">
+              <input type="text" name="key" class="form-control"
+                       id="validate-text" placeholder="今回もヒントは。。。。ないぜ" required>
+
+              <span class="input-group-addon danger"><span class="glyphicon glyphicon-remove"></span></span>
+            </div>
+            
       </div>
       <!--<?php if($editname == ''){ ?>-->
       <h5>実況投稿!</h5>

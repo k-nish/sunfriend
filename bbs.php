@@ -15,6 +15,7 @@ try{
  $id = '';
  $name = '';
  $day = '';
+ $key = '';
  
  if(isset($_GET['action'])&& ($_GET['action']=='edit')) {
      $sql = 'SELECT * FROM `names` WHERE gameid='.$_GET['id'];
@@ -27,21 +28,20 @@ try{
  }
 
  if(isset($_POST)&&!empty($_POST)){
+  if(isset($_POST['key']) && !empty($_POST['key'])){
      if ($_POST['key']=='sun') {
          if(isset($_POST['update'])){
              $sql = 'UPDATE `names` SET `gamename`="'.$_POST['gamename'].'",gameday=now() WHERE `gameid`='.$_POST['id'];
              $stmt = $dbh->prepare($sql);
              $stmt -> execute();
-          }elseif (($_POST['gamename']!='')&&($_POST['gameday']!='')) {
-            $sql = 'INSERT INTO `names`(`gameid`, `gamename`, `gameday`) VALUES (null,"'.$_POST['gamename'].'",now())';
-            $stmt=$dbh->prepare($sql);
-            $stmt->execute();
-         // $_POST['gamename']=false;
-         // $_POST['gameday']=false;
-
+          }elseif(isset($_POST['gamename'])) {
+             $sql = 'INSERT INTO `names`(`gameid`, `gamename`, `gameday`) VALUES (null,"'.$_POST['gamename'].'",now())';
+             $stmt=$dbh->prepare($sql);
+             $stmt->execute();
              header('Location: bbs.php');
           }
       }
+    }
   }
 
   $sun = array();
@@ -55,6 +55,22 @@ try{
       }
        $sun[] = $rec; 
     }
+
+
+  $re = array();
+  $sq = 'SELECT `g1`.`result`,`g1`.`date`,`g1`.`gameid` FROM `results` as `g1` 
+         WHERE `g1`.`date`=(SELECT MAX(`g2`.`date`) FROM `results` as `g2` WHERE `g2`.`gameid` = `g1`.`gameid`) ORDER BY `gameid` DESC';
+  $stmt=$dbh->prepare($sq);
+  $stmt->execute();
+  while (1) {
+    $req = $rec = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($req == false) {
+        break;
+    }
+    $re[] =$req;
+    // var_dump($re);
+  }
+
 
   $dbh = null;
 
@@ -96,10 +112,10 @@ try{
                   <li class="page-scroll">
                       <a href="bbs.php">実況掲示板TOPへ</a>
                   </li>
-                  <!-- li class="page-scroll">
-                      <a href="#about">About</a>
-                  </li>
                   <li class="page-scroll">
+                      <a href="check.php">編集用ページ</a>
+                  </li>
+                  <!-- <li class="page-scroll">
                       <a href="#contact">Contact</a>
                   </li> -->
               </ul>
@@ -124,11 +140,11 @@ try{
             
       </div>
       <div class="form-group">
-          <h5>試合日</h5>
-            <div class="input-group" data-validate="length" data-length="4">
-              <input type="text" class="form-control" name="key" id="validate-length" placeholder="投稿キー、ヒントはないぜ" required></textarea>
-              <span class="input-group-addon danger"><span class="glyphicon glyphicon-remove"></span></span>
-            </div>
+              <h5>投稿キー</h5>
+                  <div class="input-group" data-validate="length" data-length="3">
+                  <input type="text" class="form-control" name="key" id="validate-length" placeholder="投稿キー　　ヒントは...." required>
+                  <span class="input-group-addon danger"><span class="glyphicon glyphicon-remove"></span></span>
+                  </div>
       </div>
       <?php if($name==''){ ?>
       <button type="submit"  class="btn btn-primary col-xs-12" disabled>投稿する</button>
@@ -141,33 +157,35 @@ try{
       </div>
 
       <div class="col-md-8 content-margin-top">
-
+      <p><strong>青のボタンを押すと各試合の実況が見れます!<strong></p>
         <div class="timeline-centered">
 
         <?php
-        foreach($sun as $post) { ?>
-
+        foreach($sun as $post) {
+        foreach ($re as $po ) { 
+        if ($po['gameid'] == $post['gameid']) { ?>
+        
         <article class="timeline-entry">
-
             <div class="timeline-entry-inner">
                 <a href="kekka.php?id=<?php echo $post['gameid']; ?>">
                 <div class="timeline-icon bg-info">
                     <i class="entypo-feather"></i>
                     <i class="fa fa-play-circle"></i>
                 </div>
-
+                
                 <div class="timeline-label">
-                    <h2><a href="#"><?php echo $post['gamename']; ?></a> 
+                    <h2><a href="kekka.php?id=<?php echo $post['gameid']; ?>"><?php echo $post['gamename']; ?></a> 
                       <?php
-                          一旦日時型に変換
+                          //一旦日時型に変換
                           $gameday = strtotime($post['gameday']);
 
-                          書式を変換
-                          $gameday = date('Y/m/d',$created);                          
+                          //書式を変換
+                          $gameday = date('Y/m/d',$gameday);                          
                       ?>
 
                       <span><?php echo $gameday;?></span>
                       <a href="bbs.php?action=edit&id=<?php echo $post['gameid'];?>"><i class="fa fa-pencil-square-o"></i>
+                        <p>最新投稿:<Font size="3"><strong><?php echo $po['result'] ?><strong></p>
                     </h2>
                     <!--<a href="bbs.php?action=edit&id=<?php //echo $post['id'];?>"><i class="fa fa-pencil-square-o"></i>-->
                     <!--<p><?php //echo $post['comment'];?></br>
@@ -179,7 +197,7 @@ try{
         </article>
 
         <?php
-        }
+        } } }
         ?>
         <article class="timeline-entry begin">
 

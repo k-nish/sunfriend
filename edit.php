@@ -1,117 +1,70 @@
-<?php
+<?php 
+try{
+ $dsn = 'mysql:dbname=sunfriend;host=localhost';
+     
+ // 接続するためのユーザー情報
+ $user = 'root';
+ $password = '';
+ 
+ // DB接続オブジェクトを作成
+ $dbh = new PDO($dsn,$user,$password);
+ 
+ // 接続したDBオブジェクトで文字コードutf8を使うように指定
+ $dbh->query('SET NAMES utf8');
 
-  //echo 'POST送信された！';
-  //データベースに接続
-  // ステップ1.db接続
-  $dsn = 'mysql:dbname=oneline_bbs;host=localhost';
-    
-  // 接続するためのユーザー情報
-  $user = 'root';
-  $password = '';
+ $id = '';
+ $name = '';
+ $day = '';
+ $key = '';
+ 
+ if(isset($_GET['action'])&& ($_GET['action']=='edit')) {
+     $sql = 'SELECT * FROM `names` WHERE gameid='.$_GET['id'];
+     $stmt=$dbh->prepare($sql);
+     $stmt->execute();
+     $rec = $stmt->fetch(PDO::FETCH_ASSOC);
+     $id = $rec['gameid'];
+     $name = $rec['gamename'];
+     $day = $rec['gameday']; 
+ }
 
-  // DB接続オブジェクトを作成
-  $dbh = new PDO($dsn,$user,$password);
-
-  // 接続したDBオブジェクトで文字コードutf8を使うように指定
-  $dbh->query('SET NAMES utf8');
-
-  //GET送信が行われたら編集処理を実行
-   //$action = $_GET['action'];
-   //var_dump($action);
-  
-  //id,editname,editcommentの定義
-  $id='';
-  $editname='';
-  $editcomment='';
-
-  //編集ボタンが押されたら編集処理を行う
-   if(isset($_GET['action'])&& ($_GET['action'] == 'edit')){
-    //echo $_GET['action'];
-    // 編集したいデータを取得するSQL文を作成
-    $sq = 'SELECT * FROM `posts` WHERE `id`= '.$_GET['id'];
-    //var_dump($sq);
-    //SQL文を実行
-    $stmt=$dbh->prepare($sq);
-    $stmt->execute();
-    $rec = $stmt->fetch(PDO::FETCH_ASSOC);
-    $editname = $rec['nickname'];
-    $editcomment = $rec['comment'];
-    $id = $rec['id'];
-    //echo $editname;
-    //echo $editcomment;
-   }
-  //ゴミ箱ボタンが押されたら削除処理を行う
-   if(isset($_GET['action'])&& ($_GET['action'] == 'delete')){
-    //echo $_GET['action'];
-    // 編集したいデータを取得するSQL文を作成
-    //$sq = 'SELECT * FROM `posts` WHERE `id`= '.$_GET['id'];
-    $sq="DELETE FROM `posts` WHERE `id`=".$_GET['id'];
-    //var_dump($sq);
-    //SQL文を実行
-    $stmt=$dbh->prepare($sq);
-    $stmt->execute();
-    //echo $editname;
-    //echo $editcomment;
-   }
-  //POST送信が行われたら、下記の処理を実行
-  //テストコメント
-  if(isset($_POST) && !empty($_POST)){
-    if(isset($_POST['update'])){
-      var_dump($_POST['id']);
-      echo "ok";
-      //編集後データ入力SQL文
-      //$sql = "UPDATE `posts` SET `nickname`='".$_POST['nickname']."',`comment`='".$_POST['comment']."',`created`=now() WHERE `id`=".$_POST['id'];
-      $sql = "UPDATE `posts` SET `nickname`= '".$_POST['nickname']."',`comment`= '".$_POST['comment']."',`created`=now() WHERE `id`=".$_POST['id'];
-      //SQL文実行
-      $stmt=$dbh->prepare($sql);
-      $stmt->execute();
-    }else{
-    //SQL文作成(INSERT文)
-    $sql = "INSERT INTO `posts`(`nickname`, `comment`, `created`) ";
-    $sql .="VALUES ('".$_POST['nickname']."','".$_POST['comment']."',now())";
-
-    //var_dump($sql);
-    //INSERT文実行
-    $stmt=$dbh->prepare($sql);
-    $stmt->execute();
+ if(isset($_POST)&&!empty($_POST)){
+  if(isset($_POST['key']) && !empty($_POST['key'])){
+     if ($_POST['key']=='sun') {
+         if(isset($_POST['update'])){
+             $sql = 'UPDATE `names` SET `gamename`="'.$_POST['gamename'].'",gameday=now() WHERE `gameid`='.$_POST['id'];
+             $stmt = $dbh->prepare($sql);
+             $stmt -> execute();
+          }elseif(isset($_POST['gamename'])) {
+             $sql = 'INSERT INTO `names`(`gameid`, `gamename`, `gameday`) VALUES (null,"'.$_POST['gamename'].'",now())';
+             $stmt=$dbh->prepare($sql);
+             $stmt->execute();
+             header('Location: bbs.php');
+          }
+      }
+    }
   }
-  }
-  //SQL文作成(SELECT文)
-  $sql = 'SELECT * FROM `posts` ORDER BY `id` DESC';
-  
-  //SQL文実行
-  $stmt = $dbh->prepare($sql);
+
+  $sun = array();
+  $sql = 'SELECT * FROM `names` WHERE 1 ORDER BY `gameid` DESC';
+  $stmt=$dbh->prepare($sql);
   $stmt->execute();
-
-  $posts = array();
-
-  //var_dump($stmt);
-  while(1){
-
-    //実行結果として得られたデータを表示
-    $rec = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if($rec == false){
-      break;
+    while (1) {
+      $rec = $stmt->fetch(PDO::FETCH_ASSOC);
+      if ($rec == false) {
+          break;
+      }
+       $sun[] = $rec; 
     }
 
-    $posts[]=$rec;
-    // echo $rec['id'];
-    // echo $rec['nickname'];
-    // echo $rec['comment'];
-    // echo $rec['created'];
+  $dbh = null;
 
-
-  }
-    //データベースから切断
-    $dbh=null;
-?>
+  ?>
 
 <!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>セブ掲示版</title>
+  <title>サンフレンド実況掲示板!</title>
 
   <!-- CSS -->
   <link rel="stylesheet" href="assets/css/bootstrap.css">
@@ -122,31 +75,31 @@
 
 </head>
 <body>
-  <nav class="navbar navbar-default navbar-fixed-top">
-      <div class="container">
+  <!-- <nav class="navbar navbar-default navbar-fixed-top"> -->
+      <!-- <div class="container"> -->
           <!-- Brand and toggle get grouped for better mobile display -->
-          <div class="navbar-header page-scroll">
+          <!-- <div class="navbar-header page-scroll"> -->
               <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
                   <span class="sr-only">Toggle navigation</span>
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
-              </button>
-              <a class="navbar-brand" href="#page-top"><span class="strong-title"><i class="fa fa-linux"></i> Oneline bbs</span></a>
+              </button> 
+              <a class="navbar-brand" href="#page-top"><span class="strong-title"><i class="fa fa-sun-o"></i> 実況掲示板管理人編集ページ</span></a>
           </div>
           <!-- Collect the nav links, forms, and other content for toggling -->
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
               <ul class="nav navbar-nav navbar-right">
-<!--                   <li class="hidden">
-                      <a href="#page-top"></a>
+                  <!-- <li class="hidden">
+                      <a href="bbs.php">実況掲示板TOPへ</a>
+                  </li> -->
+                  <li class="page-scroll">
+                      <a href="bbs.php">実況掲示板TOPへ</a>
                   </li>
                   <li class="page-scroll">
-                      <a href="#portfolio">Portfolio</a>
+                      <a href="check.php">編集用ページ</a>
                   </li>
-                  <li class="page-scroll">
-                      <a href="#about">About</a>
-                  </li>
-                  <li class="page-scroll">
+                  <!-- <li class="page-scroll">
                       <a href="#contact">Contact</a>
                   </li> -->
               </ul>
@@ -159,27 +112,29 @@
     <div class="row">
       <div class="col-md-4 content-margin-top">
 
-    <form action="bbspr2.php" method="post">
+    <form action="bbs.php" method="post">
       <div class="form-group">
+          <h5>試合名</h5>
             <div class="input-group">
-              <input type="text" name="nickname" class="form-control"
-                       id="validate-text" placeholder="nickname" required value=<?php echo $editname; ?>>
+              <input type="text" name="gamename" class="form-control"
+                       id="validate-text" placeholder="試合名 ex.団体戦vs東大トマトMD1" value="<?php echo $name;?>" required>
 
               <span class="input-group-addon danger"><span class="glyphicon glyphicon-remove"></span></span>
             </div>
             
       </div>
       <div class="form-group">
-            <div class="input-group" data-validate="length" data-length="4">
-              <textarea type="text" class="form-control" name="comment" id="validate-length" placeholder="comment" required><?php echo $editcomment; ?></textarea>
-              <span class="input-group-addon danger"><span class="glyphicon glyphicon-remove"></span></span>
-            </div>
+              <h5>投稿キー</h5>
+                  <div class="input-group" data-validate="length" data-length="3">
+                  <textarea type="text" class="form-control" name="key" id="validate-length" placeholder="投稿キー　　ヒントは...." required></textarea>
+                  <span class="input-group-addon danger"><span class="glyphicon glyphicon-remove"></span></span>
+                  </div>
       </div>
-      <?php if($editname == ''){ ?>
-      <button type="submit"  class="btn btn-primary col-xs-12" disabled>つぶやく</button>
-      <?php }else{ ?>
-      <input type="hidden" name="id" value="<?php echo $id?>">
-      <button type="submit" name="update" class="btn btn-primary col-xs-12" disabled>編集する</button>
+      <?php if($name==''){ ?>
+      <button type="submit"  class="btn btn-primary col-xs-12" disabled>投稿する</button>
+      <?php }elseif($name != ''){?>
+      <input type='hidden' name='id' value='<?php echo "$id";?>'>
+      <button type="submit"  name='update' class="btn btn-primary col-xs-12" disabled>書き直す</button>
       <?php } ?>
     </form>
 
@@ -190,32 +145,33 @@
         <div class="timeline-centered">
 
         <?php
-        foreach ($posts as $post) { ?>
+        foreach($sun as $post) { ?>
 
         <article class="timeline-entry">
 
             <div class="timeline-entry-inner">
-                <a href="bbspr2.php?action=edit&id=<?php echo $post['id'];?>">
-                <div class="timeline-icon bg-success">
+                <a href="kekka.php?id=<?php echo $post['gameid']; ?>">
+                <div class="timeline-icon bg-info">
                     <i class="entypo-feather"></i>
-                    <i class="fa fa-cogs"></i>
+                    <i class="fa fa-play-circle"></i>
                 </div>
 
                 <div class="timeline-label">
-                    <h2><a href="#"><?php echo $post['nickname'];?></a> 
+                    <h2><a href="#"><?php echo $post['gamename']; ?></a> 
                       <?php
                           //一旦日時型に変換
-                          $created = strtotime($post['created']);
+                          $gameday = strtotime($post['gameday']);
 
                           //書式を変換
-                          $created = date('Y/m/d',$created);                          
+                          $gameday = date('Y/m/d',$gameday);                          
                       ?>
 
-                      <span><?php echo $created;?></span>
+                      <span><?php echo $gameday;?></span>
+                      <a href="bbs.php?action=edit&id=<?php echo $post['gameid'];?>"><i class="fa fa-pencil-square-o"></i>
                     </h2>
-                    <p><?php echo $post['comment'];?></br>
-                      <a href="bbspr2.php?action=delete&id=<?php echo $post['id'];?>"><i class="fa fa-trash-o"></i></a>
-                    </p>
+                    <!--<p><?php echo $post['comment'];?></br>-->
+                      <a href="bbs.php?action=delete&id=<?php echo $post['gameid'];?>"><i class="fa fa-trash-o"></i></a>
+                    <!-- </p> -->
                     
             </div>
 
@@ -254,6 +210,6 @@
 
 </body>
 </html>
-
-
-
+<?php }catch(Excepton $e){
+  echo "サーバーエラーが生じております。sunfriend2016@gamil.comまでご連絡ください。";
+} ?>
