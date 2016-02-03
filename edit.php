@@ -26,6 +26,13 @@ try{
      $name = $rec['gamename'];
      $day = $rec['gameday']; 
  }
+ 
+ if (isset($_GET['action'])&&($_GET['action'] == 'delete')) {
+     $sql = 'DELETE FROM `names` WHERE `gameid`='.$_GET['id'];
+     $stmt=$dbh->prepare($sql);
+     $stmt->execute();
+     header('Location: edit.php');
+ }
 
  if(isset($_POST)&&!empty($_POST)){
   if(isset($_POST['key']) && !empty($_POST['key'])){
@@ -56,6 +63,19 @@ try{
        $sun[] = $rec; 
     }
 
+  $re = array();
+  $sq = 'SELECT `g1`.`result`,`g1`.`date`,`g1`.`gameid` FROM `results` as `g1` 
+         WHERE `g1`.`date`=(SELECT MAX(`g2`.`date`) FROM `results` as `g2` WHERE `g2`.`gameid` = `g1`.`gameid`) ORDER BY `gameid` DESC';
+  $stmt=$dbh->prepare($sq);
+  $stmt->execute();
+  while (1) {
+    $req = $rec = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($req == false) {
+        break;
+    }
+    $re[] =$req;
+  }
+
   $dbh = null;
 
   ?>
@@ -72,6 +92,17 @@ try{
   <link rel="stylesheet" href="assets/css/form.css">
   <link rel="stylesheet" href="assets/css/timeline.css">
   <link rel="stylesheet" href="assets/css/main.css">
+
+  <script type="text/javascript">
+  function destroy(gameid){
+    if (confirm('削除しますか')) {
+      location.href = 'edit.php?action=delete&id='+gameid;
+      return true;
+    }else{
+      return false;
+    }
+  }
+  </script>
 
 </head>
 <body>
@@ -145,7 +176,9 @@ try{
         <div class="timeline-centered">
 
         <?php
-        foreach($sun as $post) { ?>
+        foreach($sun as $post) { 
+        foreach ($re as $po ) {
+          if ($po['gameid']==$post['gameid']) {?>
 
         <article class="timeline-entry">
 
@@ -168,17 +201,15 @@ try{
 
                       <span><?php echo $gameday;?></span>
                       <a href="bbs.php?action=edit&id=<?php echo $post['gameid'];?>"><i class="fa fa-pencil-square-o"></i>
+                      <a href="#" onclick="destroy(<?php echo $post['gameid'];?>)"><i class="fa fa-trash-o"></i></a>
                     </h2>
-                    <!--<p><?php echo $post['comment'];?></br>-->
-                      <a href="bbs.php?action=delete&id=<?php echo $post['gameid'];?>"><i class="fa fa-trash-o"></i></a>
-                    <!-- </p> -->
-                    
+                      <p>最新投稿:<Font size="3"><strong><?php echo $po['result'] ?><strong></p>
             </div>
 
         </article>
 
         <?php
-        }
+        }}}
         ?>
         <article class="timeline-entry begin">
 
