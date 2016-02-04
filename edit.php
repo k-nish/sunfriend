@@ -106,10 +106,10 @@ try{
 
 </head>
 <body>
-  <!-- <nav class="navbar navbar-default navbar-fixed-top"> -->
-      <!-- <div class="container"> -->
+  <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
           <!-- Brand and toggle get grouped for better mobile display -->
-          <!-- <div class="navbar-header page-scroll"> -->
+          <div class="navbar-header page-scroll">
               <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
                   <span class="sr-only">Toggle navigation</span>
                   <span class="icon-bar"></span>
@@ -157,7 +157,7 @@ try{
       <div class="form-group">
               <h5>投稿キー</h5>
                   <div class="input-group" data-validate="length" data-length="3">
-                  <textarea type="text" class="form-control" name="key" id="validate-length" placeholder="投稿キー　　ヒントは...." required></textarea>
+                  <input type="text" class="form-control" name="key" id="validate-length" placeholder="投稿キー　　ヒントは...." required></textarea>
                   <span class="input-group-addon danger"><span class="glyphicon glyphicon-remove"></span></span>
                   </div>
       </div>
@@ -183,7 +183,7 @@ try{
         <article class="timeline-entry">
 
             <div class="timeline-entry-inner">
-                <a href="kekka.php?id=<?php echo $post['gameid']; ?>">
+                <a href="result.php?id=<?php echo $post['gameid']; ?>">
                 <div class="timeline-icon bg-info">
                     <i class="entypo-feather"></i>
                     <i class="fa fa-play-circle"></i>

@@ -4,22 +4,33 @@ try{
   //データベースに接続
   // ステップ1.db接続
   $dsn = 'mysql:dbname=sunfriend;host=localhost';
-    
   // 接続するためのユーザー情報
   $user = 'root';
   $password = '';
-
   // DB接続オブジェクトを作成
   $dbh = new PDO($dsn,$user,$password);
-
   // 接続したDBオブジェクトで文字コードutf8を使うように指定
   $dbh->query('SET NAMES utf8');
-  
+
   $id ='';
-  if (isset($_GET)&&!empty($_GET)) {
+  if (isset($_GET['id'])&&!empty($_GET['id'])) {
     $id = $_GET['id'];
   }
   
+  if (isset($_GET['action'])&&($_GET['action']=='delete')) {
+      $sq= 'SELECT `gameid` FROM `results` WHERE `id`='.$_GET['id'];
+      $stm=$dbh->prepare($sq);
+      $stm->execute();
+      $req  = $stm->fetch(PDO::FETCH_ASSOC);
+      var_dump($req);
+      $id = $req['gameid'];
+
+      $sql='DELETE FROM `results` WHERE `id`='.$_GET['id'];
+      $stmt=$dbh->prepare($sql);
+      $stmt->execute();
+      header('Location: result.php?id='.$id);
+  }
+
   if(isset($_POST) && !empty($_POST)){
       if($_POST['key']=='sun'){
           $sql = 'INSERT INTO `results`(`id`, `result`, `years`, `date`, `gameid`) 
@@ -30,7 +41,6 @@ try{
           header('Location: kekka.php?id='.$id);
       }
   }
-
 
   $sql = 'SELECT * FROM `results` WHERE gameid = '.$id.' ORDER BY `id` DESC';
   $stmt = $dbh->prepare($sql);
@@ -65,7 +75,17 @@ try{
   <link rel="stylesheet" href="assets/css/form.css">
   <link rel="stylesheet" href="assets/css/timeline.css">
   <link rel="stylesheet" href="assets/css/main.css">
-
+  
+  <script type="text/javascript">
+  function destroy(id){
+    if (confirm('削除しますか')) {
+      location.href = 'result.php?action=delete&id='+id;
+      return true;
+    }else{
+      return false;
+    }
+  }
+  </script>
 </head>
 <body>
   <nav class="navbar navbar-default navbar-fixed-top"> 
@@ -78,7 +98,7 @@ try{
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
               </button>
-              <a class="navbar-brand" href="bbs.php"><span class="strong-title"><i class="fa fa-sun-o"></i>SunFriend!実況掲示板!<?php echo $name; ?></span></a>
+              <a class="navbar-brand" href="edit.php"><span class="strong-title"><i class="fa fa-sun-o"></i>管理用ホームページ<?php echo $name; ?></span></a>
           </div>
           <!-- Collect the nav links, forms, and other content for toggling -->
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -90,7 +110,7 @@ try{
                       <a href="bbs.php">実況掲示板TOPへ</a>
                   </li>
                   <li class="page-scroll">
-                      <a href="check.php">編集用ページへ</a>
+                      <a href="edit.php">編集用ページへ</a>
                   </li>
                   <!-- <li class="page-scroll">
                       <a href="#contact">Contact</a>
@@ -105,7 +125,7 @@ try{
     <div class="row">
       <div class="col-md-4 content-margin-top">
 
-    <form action="kekka.php" method="post">
+    <form action="result.php&id=<?php echo $id; ?>" method="post">
       <div class="form-group">
             <h5>学年(何か書いてね)</h5>
             <div class="input-group">
@@ -139,9 +159,7 @@ try{
     </form>
 
       </div>
-      <!--<h3>実況なう!</h3>-->
       <div class="col-md-8 content-margin-top">
-        <!--<h3>実況なう!</h3>-->
         <div class="timeline-centered">
         <?php
         foreach ($posts as $post) { ?>
@@ -149,6 +167,7 @@ try{
         <article class="timeline-entry">
 
             <div class="timeline-entry-inner">
+                <!--<a href="bbspr2.php?action=edit&id=<?php echo $post['id'];?>">-->
                 <div class="timeline-icon bg-success">
                     <i class="entypo-feather"></i>
                     <i class="fa fa-play-circle"></i>
@@ -167,7 +186,7 @@ try{
                       <span><?php echo $date;?></span>
                     </h2>
                     <p><Font size="4"><strong><?php echo $post['result'];?><strong></br>
-                      <!--<a href="bbspr2.php?action=delete&id=<?php echo $post['id'];?>"><i class="fa fa-trash-o"></i></a>-->
+                      <a href="#" onclick="destroy(<?php echo $post['id']; ?>)"><i class="fa fa-trash-o"></i></a>
                     </p>
                     
             </div>
@@ -193,12 +212,6 @@ try{
 
     </div>
   </div>
-
-
-
-
-
-  
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   <!-- Include all compiled plugins (below), or include individual files as needed -->
