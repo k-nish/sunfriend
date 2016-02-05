@@ -18,6 +18,7 @@ if (isset($_POST)&&!empty($_POST)) {
   <link rel="stylesheet" href="assets/css/form.css">
   <link rel="stylesheet" href="assets/css/timeline.css">
   <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="shotcut icon"  href="assets/favicon.ico">
 
 </head>
 <body>
