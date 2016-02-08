@@ -1,53 +1,47 @@
 <?php
 try{
-  //echo 'POST送信された！';
-  //データベースに接続
-  // ステップ1.db接続
-  $dsn = 'mysql:dbname=sunfriend;host=localhost';
-    
-  // 接続するためのユーザー情報
-  $user = 'root';
-  $password = '';
+  require('db.php');
 
-  // DB接続オブジェクトを作成
-  $dbh = new PDO($dsn,$user,$password);
-
-  // 接続したDBオブジェクトで文字コードutf8を使うように指定
-  $dbh->query('SET NAMES utf8');
-  
   $id ='';
   if (isset($_GET)&&!empty($_GET)) {
     $id = $_GET['id'];
   }
   
+  $error = array();
   if(isset($_POST) && !empty($_POST)){
       if($_POST['key']=='sun'){
-          $sql = 'INSERT INTO `results`(`id`, `result`, `years`, `date`, `gameid`) 
-              VALUES (null,"'.$_POST['result'].'","'.$_POST['years'].'",now(),'.$_POST['id'].')';
-          $stmt=$dbh->prepare($sql);
-          $stmt->execute();
+          $sql = sprintf('INSERT INTO `results`(`id`, `result`, `years`, `date`, `gameid`) 
+              VALUES (null,"%s","%s",now(),"%d")',
+              mysqli_real_escape_string($db,$_POST['result']),
+              mysqli_real_escape_string($db,$_POST['years']),
+              mysqli_real_escape_string($db,$_POST['id']));
+          $stmt = mysqli_query($db,$sql) or die(mysqli_error($db));
           $id=$_POST['id'];
           header('Location: kekka.php?id='.$id);
+      }elseif($_POST['key']!='sun'){
+          $error['key'] = 'wrong';
       }
   }
 
 
-  $sql = 'SELECT * FROM `results` WHERE gameid = '.$id.' ORDER BY `id` DESC';
-  $stmt = $dbh->prepare($sql);
-  $stmt->execute();
+  // $sql = 'SELECT * FROM `results` WHERE gameid = '.$id.' ORDER BY `id` DESC';
+  $sql = sprintf('SELECT * FROM `results` WHERE gameid = "%d" ORDER BY `id` DESC',
+    mysqli_real_escape_string($db,$id));
+  $stmt = mysqli_query($db,$sql) or die(mysqli_error($db));
   $posts = array();
   while(1){
-      $rec = $stmt->fetch(PDO::FETCH_ASSOC);
+      $rec = mysqli_fetch_assoc($stmt);
       if($rec == false){
           break;
       }
       $posts[]=$rec;
   }
 
-  $sq = 'SELECT * FROM `names` WHERE gameid ='.$id;
-  $stmt=$dbh->prepare($sq);
-  $stmt->execute();
-  $rec = $stmt->fetch(PDO::FETCH_ASSOC);
+  $sq = sprintf('SELECT * FROM `names` WHERE gameid ="%d"',
+    mysqli_real_escape_string($db,$id));
+  $stmt = mysqli_query($db,$sq) or die(mysqli_error($db));
+  // $rec = $stmt->fetch(PDO::FETCH_ASSOC);
+  $rec = mysqli_fetch_assoc($stmt);
   $name = $rec['gamename'];
 
     $dbh=null;
@@ -110,9 +104,13 @@ try{
       <div class="form-group">
             <h5>学年(何か書いてね)</h5>
             <div class="input-group">
+              <?php if (isset($error['key'])&&($error['key']=='wrong')) { ?>
+                <input type="text" name="years" class="form-control"
+                       id="validate-text" placeholder="学年" value="<?php echo $_POST['years']; ?>" required>
+              <?php }else{ ?>
               <input type="text" name="years" class="form-control"
                        id="validate-text" placeholder="学年" required>
-
+              <?php } ?>
               <span class="input-group-addon danger"><span class="glyphicon glyphicon-remove"></span></span>
             </div>
             
@@ -120,7 +118,11 @@ try{
       <div class="form-group">
             <h5>結果(何か入力してね)</h5>
             <div class="input-group" data-validate="length" data-length="1">  
-              <textarea type="text" class="form-control" name="result" id="validate-length" placeholder="結果 ex.ファイナルイン!" required></textarea>
+              <?php if (isset($error['key'])&&($error['key']=='wrong')) { ?>
+              <input type="text" class="form-control" name="result" id="validate-length" placeholder="結果 ex.ファイナルイン!" value="<?php echo $_POST['result']; ?>" required>
+              <?php }else{ ?>
+              <input type="text" class="form-control" name="result" id="validate-length" placeholder="結果 ex.ファイナルイン!" required>
+              <?php } ?>
               <span class="input-group-addon danger"><span class="glyphicon glyphicon-remove"></span></span>
             </div>
       </div>
@@ -132,7 +134,9 @@ try{
 
               <span class="input-group-addon danger"><span class="glyphicon glyphicon-remove"></span></span>
             </div>
-            
+            <?php if(isset($error['key'])&&$error['key']=='wrong'){ ?>
+            <p class="error">*正しい投稿キーを入れてください。</p>
+            <?php } ?>
       </div>
       <h5>実況投稿!</h5>
       <input type="hidden" name="id" value=<?php echo $id; ?>>
@@ -160,7 +164,6 @@ try{
                       <?php
                           //一旦日時型に変換
                           $date = strtotime($post['date']);
-
                           //書式を変換
                           $date = date('Y/m/d',$date);                          
                       ?>

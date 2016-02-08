@@ -1,10 +1,25 @@
-<?php 
+<?php
+$error = array(); 
 if (isset($_POST)&&!empty($_POST)) {
-    if (($_POST['id'] == '2014')&&($_POST['passw'])=='1008') {
-      header('Location: bbs.php');
+    if (($_POST['id'] == '2014')&&($_POST['pass'] == '1008')) {
+        header('Location: bbs.php');
+    }
+    if (($_POST['id']!='2014')&&($_POST['pass']=='1008')) {
+        $error['id'] = 'wrong';
+    }    
+    if (($error['id']=='2014')&&($_POST['pass']!='1008')) {
+        $error['pass'] = 'wrong';
     }
 }
-  ?>
+if (isset($_POST['id'])&&$_POST['id']=='') {
+    $error['id'] = 'blank';
+    // var_dump($error['id']);
+}
+if (isset($_POST['pass'])&&$_POST['pass']=='') {
+    $error['pass'] = 'blank';
+    // var_dump($error['pass']);
+}
+?>
 
 <!DOCTYPE html>
 <html lang="ja">
@@ -18,6 +33,7 @@ if (isset($_POST)&&!empty($_POST)) {
   <link rel="stylesheet" href="assets/css/form.css">
   <link rel="stylesheet" href="assets/css/timeline.css">
   <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="shotcut icon"  href="assets/favicon.ico">
 
 </head>
 <body>
@@ -64,7 +80,9 @@ if (isset($_POST)&&!empty($_POST)) {
             <div class="input-group">
               <input type="text" name="id" class="form-control"
                        id="validate-text" placeholder="ID" required>
-
+              <?php if (isset($error['id'])&&$error['id']=='wrong'): ?>
+              <p class='error'>*正しいIDを入力してください。</p>
+              <?php endif ?>
               <span class="input-group-addon danger"><span class="glyphicon glyphicon-remove"></span></span>
             </div>
             

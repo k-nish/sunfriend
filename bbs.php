@@ -1,55 +1,48 @@
 <?php 
 try{
- $dsn = 'mysql:dbname=sunfriend;host=localhost';
-     
- // 接続するためのユーザー情報
- $user = 'root';
- $password = '';
- 
- // DB接続オブジェクトを作成
- $dbh = new PDO($dsn,$user,$password);
- 
- // 接続したDBオブジェクトで文字コードutf8を使うように指定
- $dbh->query('SET NAMES utf8');
+ require('db.php');
 
  $id = '';
  $name = '';
  $day = '';
  $key = '';
- 
+ $error = array();
+
  if(isset($_GET['action'])&& ($_GET['action']=='edit')) {
-     $sql = 'SELECT * FROM `names` WHERE gameid='.$_GET['id'];
-     $stmt=$dbh->prepare($sql);
-     $stmt->execute();
-     $rec = $stmt->fetch(PDO::FETCH_ASSOC);
+     $sql = sprintf('SELECT * FROM `names` WHERE gameid=%d',
+          mysqli_real_escape_string($db,$_GET['id']));
+     $stmt = mysqli_query($db,$sql) or die(mysqli_error($db));
+     $rec = mysqli_fetch_assoc($stmt);
      $id = $rec['gameid'];
      $name = $rec['gamename'];
      $day = $rec['gameday']; 
  }
 
  if(isset($_POST)&&!empty($_POST)){
-  if(isset($_POST['key']) && !empty($_POST['key'])){
-     if ($_POST['key']=='sun') {
-         if(isset($_POST['update'])){
-             $sql = 'UPDATE `names` SET `gamename`="'.$_POST['gamename'].'",gameday=now() WHERE `gameid`='.$_POST['id'];
-             $stmt = $dbh->prepare($sql);
-             $stmt -> execute();
-          }elseif(isset($_POST['gamename'])) {
-             $sql = 'INSERT INTO `names`(`gameid`, `gamename`, `gameday`) VALUES (null,"'.$_POST['gamename'].'",now())';
-             $stmt=$dbh->prepare($sql);
-             $stmt->execute();
-             header('Location: bbs.php');
-          }
+     if(isset($_POST['key']) && !empty($_POST['key'])){
+         if ($_POST['key']=='sun') {
+             if(isset($_POST['update'])){
+                 $sql = sprintf('UPDATE `names` SET `gamename`="%s",gameday=now() WHERE `gameid`="%d"',
+                     mysqli_real_escape_string($db,$_POST['gamename']),
+                     mysqli_real_escape_string($db,$_POST['id']));
+                 $stmt = mysqli_query($db,$sql) or die(mysqli_error($db));
+            }elseif(isset($_POST['gamename'])) {
+                 $sql = sprintf('INSERT INTO `names`(`gameid`, `gamename`, `gameday`) VALUES (null,"%s",now())',
+                     mysqli_real_escape_string($db,$_POST['gamename']));
+                 $stmt = mysqli_query($db,$sql) or die(mysqli_error($db));
+                 header('Location: bbs.php');
+            }
+         }elseif($_POST['key']!='sun'){
+             $error['key'] = 'wrong';
+         }
       }
-    }
   }
 
   $sun = array();
   $sql = 'SELECT * FROM `names` WHERE 1 ORDER BY `gameid` DESC';
-  $stmt=$dbh->prepare($sql);
-  $stmt->execute();
+  $stmt = mysqli_query($db,$sql) or die(mysqli_error($db));
     while (1) {
-      $rec = $stmt->fetch(PDO::FETCH_ASSOC);
+      $rec = mysqli_fetch_assoc($stmt);
       if ($rec == false) {
           break;
       }
@@ -60,17 +53,14 @@ try{
   $re = array();
   $sq = 'SELECT `g1`.`result`,`g1`.`date`,`g1`.`gameid` FROM `results` as `g1` 
          WHERE `g1`.`date`=(SELECT MAX(`g2`.`date`) FROM `results` as `g2` WHERE `g2`.`gameid` = `g1`.`gameid`) ORDER BY `gameid` DESC';
-  $stmt=$dbh->prepare($sq);
-  $stmt->execute();
+  $stmt = mysqli_query($db,$sq) or die(mysqli_error($db));
   while (1) {
-    $req = $rec = $stmt->fetch(PDO::FETCH_ASSOC);
+    $req = mysqli_fetch_assoc($stmt);
     if ($req == false) {
         break;
     }
     $re[] =$req;
-    // var_dump($re);
   }
-
 
   $dbh = null;
 
@@ -133,9 +123,13 @@ try{
       <div class="form-group">
           <h5>試合名</h5>
             <div class="input-group">
-              <input type="text" name="gamename" class="form-control"
+              <?php if (isset($error['key'])&&$error['key']=='wrong'){ ?>
+                <input type="text" name="gamename" class="form-control"
+                       id="validate-text" placeholder="試合名 ex.団体戦vs東大トマトMD1" value="<?php echo $_POST['gamename'];?>" required>
+              <?php }else{ ?>
+                <input type="text" name="gamename" class="form-control"
                        id="validate-text" placeholder="試合名 ex.団体戦vs東大トマトMD1" value="<?php echo $name;?>" required>
-
+              <?php } ?>
               <span class="input-group-addon danger"><span class="glyphicon glyphicon-remove"></span></span>
             </div>
             
@@ -146,6 +140,9 @@ try{
                   <input type="text" class="form-control" name="key" id="validate-length" placeholder="投稿キー　　ヒントは...." required>
                   <span class="input-group-addon danger"><span class="glyphicon glyphicon-remove"></span></span>
                   </div>
+                  <?php if(isset($error['key'])&&$error['key']=='wrong'){ ?>
+                  <p class="error">*正しい投稿キーを入れてください。</p>
+                  <?php } ?>
       </div>
       <?php if($name==''){ ?>
       <button type="submit"  class="btn btn-primary col-xs-12" disabled>投稿する</button>
@@ -161,11 +158,7 @@ try{
       <p><strong>青のボタンを押すと各試合の実況が見れます!<strong></p>
         <div class="timeline-centered">
 
-        <?php
-        foreach($sun as $post) {
-        foreach ($re as $po ) { 
-        if ($po['gameid'] == $post['gameid']) { ?>
-        
+        <?php foreach($sun as $post) { ?>
         <article class="timeline-entry">
             <div class="timeline-entry-inner">
                 <a href="kekka.php?id=<?php echo $post['gameid']; ?>">
@@ -183,23 +176,21 @@ try{
                           //書式を変換
                           $gameday = date('Y/m/d',$gameday);                          
                       ?>
-
                       <span><?php echo $gameday;?></span>
                       <a href="bbs.php?action=edit&id=<?php echo $post['gameid'];?>"><i class="fa fa-pencil-square-o"></i>
-                        <p>最新投稿:<Font size="3"><strong><?php echo $po['result'] ?><strong></p>
+                      <?php foreach ($re as $po ) { 
+                        if ($po['gameid'] == $post['gameid']) { ?>
+                      <p><a href="kekka.php?id=<?php echo $post['gameid']; ?>">最新投稿:<Font size="3"><strong><?php echo $po['result'] ?><strong></p>
+                      <?php } }?>
                     </h2>
                     <!--<a href="bbs.php?action=edit&id=<?php //echo $post['id'];?>"><i class="fa fa-pencil-square-o"></i>-->
                     <!--<p><?php //echo $post['comment'];?></br>
                       <a href="bbspr2.php?action=delete&id=<?php //echo $post['id'];?>"><i class="fa fa-trash-o"></i></a>
-                    </p>-->
-                    
+                    </p>-->   
             </div>
 
         </article>
-
-        <?php
-        } } }
-        ?>
+        <?php }  ?>
         <article class="timeline-entry begin">
 
             <div class="timeline-entry-inner">
