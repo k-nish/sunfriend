@@ -20,11 +20,10 @@ try{
           header('Location: kekka.php?id='.$id);
       }elseif($_POST['key']!='sun'){
           $error['key'] = 'wrong';
+          $id=$_POST['id'];
       }
   }
 
-
-  // $sql = 'SELECT * FROM `results` WHERE gameid = '.$id.' ORDER BY `id` DESC';
   $sql = sprintf('SELECT * FROM `results` WHERE gameid = "%d" ORDER BY `id` DESC',
     mysqli_real_escape_string($db,$id));
   $stmt = mysqli_query($db,$sql) or die(mysqli_error($db));
@@ -40,7 +39,6 @@ try{
   $sq = sprintf('SELECT * FROM `names` WHERE gameid ="%d"',
     mysqli_real_escape_string($db,$id));
   $stmt = mysqli_query($db,$sq) or die(mysqli_error($db));
-  // $rec = $stmt->fetch(PDO::FETCH_ASSOC);
   $rec = mysqli_fetch_assoc($stmt);
   $name = $rec['gamename'];
 
@@ -73,7 +71,8 @@ try{
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
               </button>
-              <a class="navbar-brand" href="bbs.php"><span class="strong-title"><i class="fa fa-sun-o"></i>SunFriend!実況掲示板!<?php echo $name; ?></span></a>
+              <a class="navbar-brand" href="bbs.php"><span class="strong-title"><i class="fa fa-sun-o"></i>
+                SunFriend!実況掲示板!<?php echo htmlspecialchars($name,ENT_QUOTES,'UTF-8'); ?></span></a>
           </div>
           <!-- Collect the nav links, forms, and other content for toggling -->
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -100,13 +99,13 @@ try{
     <div class="row">
       <div class="col-md-4 content-margin-top">
 
-    <form action="kekka.php" method="post">
+    <form action="kekka.php?id=<?php echo $id ?>" method="post">
       <div class="form-group">
             <h5>学年(何か書いてね)</h5>
             <div class="input-group">
               <?php if (isset($error['key'])&&($error['key']=='wrong')) { ?>
                 <input type="text" name="years" class="form-control"
-                       id="validate-text" placeholder="学年" value="<?php echo $_POST['years']; ?>" required>
+                       id="validate-text" placeholder="学年" value="<?php echo htmlspecialchars($_POST['years'],ENT_QUOTES,'UTF-8'); ?>" required>
               <?php }else{ ?>
               <input type="text" name="years" class="form-control"
                        id="validate-text" placeholder="学年" required>
@@ -119,7 +118,8 @@ try{
             <h5>結果(何か入力してね)</h5>
             <div class="input-group" data-validate="length" data-length="1">  
               <?php if (isset($error['key'])&&($error['key']=='wrong')) { ?>
-              <input type="text" class="form-control" name="result" id="validate-length" placeholder="結果 ex.ファイナルイン!" value="<?php echo $_POST['result']; ?>" required>
+              <input type="text" class="form-control" name="result" id="validate-length" 
+                  placeholder="結果 ex.ファイナルイン!" value="<?php echo htmlspecialchars($_POST['result'],ENT_QUOTES,'UTF-8'); ?>" required>
               <?php }else{ ?>
               <input type="text" class="form-control" name="result" id="validate-length" placeholder="結果 ex.ファイナルイン!" required>
               <?php } ?>
@@ -197,12 +197,7 @@ try{
 
     </div>
   </div>
-
-
-
-
-
-  
+ 
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   <!-- Include all compiled plugins (below), or include individual files as needed -->
