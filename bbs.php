@@ -8,6 +8,10 @@ try{
  $key = '';
  $error = array();
 
+ function h($value){
+    return htmlspecialchars($value,ENT_QUOTES,'UTF-8');
+}
+
  if(isset($_GET['action'])&& ($_GET['action']=='edit')) {
      $sql = sprintf('SELECT * FROM `names` WHERE gameid=%d',
           mysqli_real_escape_string($db,$_GET['id']));
@@ -125,10 +129,10 @@ try{
             <div class="input-group">
               <?php if (isset($error['key'])&&$error['key']=='wrong'){ ?>
                 <input type="text" name="gamename" class="form-control"
-                       id="validate-text" placeholder="試合名 ex.団体戦vs東大トマトMD1" value="<?php echo $_POST['gamename'];?>" required>
+                       id="validate-text" placeholder="試合名 ex.団体戦vs東大トマトMD1" value="<?php echo h($_POST['gamename']); ?>" required>
               <?php }else{ ?>
                 <input type="text" name="gamename" class="form-control"
-                       id="validate-text" placeholder="試合名 ex.団体戦vs東大トマトMD1" value="<?php echo $name;?>" required>
+                       id="validate-text" placeholder="試合名 ex.団体戦vs東大トマトMD1" value="<?php echo h($name); ?>" required>
               <?php } ?>
               <span class="input-group-addon danger"><span class="glyphicon glyphicon-remove"></span></span>
             </div>
@@ -168,18 +172,18 @@ try{
                 </div>
                 
                 <div class="timeline-label">
-                    <h2><a href="kekka.php?id=<?php echo $post['gameid']; ?>"><?php echo $post['gamename']; ?></a> 
+                    <h2><a href="kekka.php?id=<?php echo h($post['gameid']); ?>"><?php echo h($post['gamename']); ?></a> 
                       <?php
                           //一旦日時型に変換
                           $gameday = strtotime($post['gameday']);
                           //書式を変換
                           $gameday = date('Y/m/d',$gameday);                          
                       ?>
-                      <span><?php echo $gameday;?></span>
-                      <a href="bbs.php?action=edit&id=<?php echo $post['gameid'];?>"><i class="fa fa-pencil-square-o"></i>
+                      <span><?php echo h($gameday);?></span>
+                      <a href="bbs.php?action=edit&id=<?php echo h($post['gameid']);?>"><i class="fa fa-pencil-square-o"></i>
                       <?php foreach ($re as $po ) { 
                         if ($po['gameid'] == $post['gameid']) { ?>
-                      <p><a href="kekka.php?id=<?php echo $post['gameid']; ?>">最新投稿:<Font size="3"><strong><?php echo $po['result'] ?><strong></p>
+                      <p><a href="kekka.php?id=<?php echo h($post['gameid']); ?>">最新投稿:<Font size="3"><strong><?php echo h($po['result']); ?><strong></p>
                       <?php } }?>
                     </h2>
                     <!--<a href="bbs.php?action=edit&id=<?php //echo $post['id'];?>"><i class="fa fa-pencil-square-o"></i>-->

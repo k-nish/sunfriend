@@ -1,6 +1,10 @@
 <?php
 try{
   require('db.php');
+ 
+  function h($value){
+    return htmlspecialchars($value,ENT_QUOTES,'UTF-8');
+}
 
   $id ='';
   if (isset($_GET)&&!empty($_GET)) {
@@ -72,7 +76,7 @@ try{
                   <span class="icon-bar"></span>
               </button>
               <a class="navbar-brand" href="bbs.php"><span class="strong-title"><i class="fa fa-sun-o"></i>
-                SunFriend!実況掲示板!<?php echo htmlspecialchars($name,ENT_QUOTES,'UTF-8'); ?></span></a>
+                SunFriend!実況掲示板!<?php echo h($name); ?></span></a>
           </div>
           <!-- Collect the nav links, forms, and other content for toggling -->
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -99,13 +103,13 @@ try{
     <div class="row">
       <div class="col-md-4 content-margin-top">
 
-    <form action="kekka.php?id=<?php echo $id ?>" method="post">
+    <form action="kekka.php?id=<?php echo h($id); ?>" method="post">
       <div class="form-group">
             <h5>学年(何か書いてね)</h5>
             <div class="input-group">
               <?php if (isset($error['key'])&&($error['key']=='wrong')) { ?>
                 <input type="text" name="years" class="form-control"
-                       id="validate-text" placeholder="学年" value="<?php echo htmlspecialchars($_POST['years'],ENT_QUOTES,'UTF-8'); ?>" required>
+                       id="validate-text" placeholder="学年" value="<?php echo h($_POST['years']); ?>" required>
               <?php }else{ ?>
               <input type="text" name="years" class="form-control"
                        id="validate-text" placeholder="学年" required>
@@ -119,7 +123,7 @@ try{
             <div class="input-group" data-validate="length" data-length="1">  
               <?php if (isset($error['key'])&&($error['key']=='wrong')) { ?>
               <input type="text" class="form-control" name="result" id="validate-length" 
-                  placeholder="結果 ex.ファイナルイン!" value="<?php echo htmlspecialchars($_POST['result'],ENT_QUOTES,'UTF-8'); ?>" required>
+                  placeholder="結果 ex.ファイナルイン!" value="<?php echo h($_POST['result']); ?>" required>
               <?php }else{ ?>
               <input type="text" class="form-control" name="result" id="validate-length" placeholder="結果 ex.ファイナルイン!" required>
               <?php } ?>
@@ -139,7 +143,7 @@ try{
             <?php } ?>
       </div>
       <h5>実況投稿!</h5>
-      <input type="hidden" name="id" value=<?php echo $id; ?>>
+      <input type="hidden" name="id" value=<?php echo h($id); ?>>
       <button type="submit"  name='report' class="btn btn-primary col-xs-12" disabled>実況する!</button>
     </form>
 
@@ -160,7 +164,7 @@ try{
                 </div>
 
                 <div class="timeline-label">
-                    <h2><a href="#"><?php echo $post['years'];?></a> 
+                    <h2><a href="#"><?php echo h($post['years']);?></a> 
                       <?php
                           //一旦日時型に変換
                           $date = strtotime($post['date']);
@@ -168,9 +172,9 @@ try{
                           $date = date('Y/m/d',$date);                          
                       ?>
 
-                      <span><?php echo $date;?></span>
+                      <span><?php echo h($date);?></span>
                     </h2>
-                    <p><Font size="4"><strong><?php echo $post['result'];?><strong></br>
+                    <p><Font size="4"><strong><?php echo h($post['result']);?><strong></br>
                       <!--<a href="bbspr2.php?action=delete&id=<?php echo $post['id'];?>"><i class="fa fa-trash-o"></i></a>-->
                     </p>
                     
