@@ -174,9 +174,7 @@ try{
 
                       <span><?php echo h($date);?></span>
                     </h2>
-                    <p><Font size="4"><strong><?php echo h($post['result']);?><strong></br>
-                      <!--<a href="bbspr2.php?action=delete&id=<?php echo $post['id'];?>"><i class="fa fa-trash-o"></i></a>-->
-                    </p>
+                    <p><Font size="4"><strong><?php echo h($post['result']);?><strong></br></p>
                     
             </div>
 
