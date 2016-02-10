@@ -1,7 +1,7 @@
 <?php
 $error = array(); 
 if (isset($_POST)&&!empty($_POST)) {
-    if (($_POST['id'] == '2014')&&($_POST['pass'] == '1008')) {
+    if ($_POST['id'] == '2014'&&$_POST['pass'] == '1008') {
         header('Location: bbs.php');
     }
     if (($_POST['id']!='2014')&&($_POST['pass']=='1008')) {

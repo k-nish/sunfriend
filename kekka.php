@@ -13,11 +13,13 @@ try{
   
   $error = array();
   if(isset($_POST) && !empty($_POST)){
-      if($_POST['key']=='sun'){
-          $sql = sprintf('INSERT INTO `results`(`id`, `result`, `years`, `date`, `gameid`) 
+      if(mb_convert_kana($_POST['key'],'r','UTF-8')=='sun'){
+          $kresult = mb_convert_kana($_POST['result'],'sa','UTF-8');
+          $kyears = mb_convert_kana($_POST['years'],'sa','UTF-8');
+          $sql = sprintf('INSERT INTO `results`(`id`, `result`, `years`, `date`, `gameid`)
               VALUES (null,"%s","%s",now(),"%d")',
-              mysqli_real_escape_string($db,$_POST['result']),
-              mysqli_real_escape_string($db,$_POST['years']),
+              mysqli_real_escape_string($db,$kresult),
+              mysqli_real_escape_string($db,$kyears),
               mysqli_real_escape_string($db,$_POST['id']));
           $stmt = mysqli_query($db,$sql) or die(mysqli_error($db));
           $id=$_POST['id'];

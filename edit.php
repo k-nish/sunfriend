@@ -33,13 +33,15 @@ if(isset($_POST)&&!empty($_POST)){
     if(isset($_POST['key']) && !empty($_POST['key'])){
         if ($_POST['key']=='sun') {
             if(isset($_POST['update'])){
+                $gname = mb_convert_kana($_POST['gamename'],'sa','UTF-8');
                 $sql = sprintf('UPDATE `names` SET `gamename`=%s,gameday=now() WHERE `gameid`=%d',
-                         mysqli_real_escape_string($db,$_POST['gamename']),
+                         mysqli_real_escape_string($db,$gname),
                          mysqli_real_escape_string($db,$_POST['id']));
                 $stmt = mysqli_query($db,$sql) or die(mysqli_error($db));
             }elseif(isset($_POST['gamename'])) {
+                $gname = mb_convert_kana($_POST['gamename'],'sa','UTF-8');
                 $sql = sprintf('INSERT INTO `names`(`gameid`, `gamename`, `gameday`) VALUES (null,%s,now())',
-                         mysqli_real_escape_string($db,$_POST['gamename']));
+                         mysqli_real_escape_string($db,$gname));
                 $stmt = mysqli_query($db,$sql) or die(mysqli_error($db));
                 header('Location: bbs.php');
             }

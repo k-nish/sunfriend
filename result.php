@@ -33,8 +33,11 @@ try{
 
   if(isset($_POST) && !empty($_POST)){
       if($_POST['key']=='sun'){
+          $gresult = mb_convert_kana($_POST['result'],'sa','UTF-8');
+          $gyears = mb_convert_kana($_POST['years'],'sa','UTF-8');
           $sql = 'INSERT INTO `results`(`id`, `result`, `years`, `date`, `gameid`) 
-              VALUES (null,"'.$_POST['result'].'","'.$_POST['years'].'",now(),'.$_POST['id'].')';
+              VALUES (null,"'.$_POST['result'].'","'.$_POST['years'].'",now(),'.$id.')';
+          //sql正しいか確認すべし
           $stmt=$dbh->prepare($sql);
           $stmt->execute();
           $id=$_POST['id'];
