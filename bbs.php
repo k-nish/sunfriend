@@ -1,4 +1,4 @@
-<?php 
+<?php
 try{
  require('db.php');
 
@@ -52,7 +52,7 @@ try{
       if ($rec == false) {
           break;
       }
-       $sun[] = $rec; 
+       $sun[] = $rec;
     }
 
 
@@ -97,7 +97,7 @@ try{
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
-              </button> 
+              </button>
               <a class="navbar-brand" href="#page-top"><span class="strong-title"><i class="fa fa-sun-o"></i> Sun Friend!実況掲示板!</span></a>
           </div>
           <!-- Collect the nav links, forms, and other content for toggling -->
@@ -120,7 +120,7 @@ try{
           <!-- /.navbar-collapse -->
       </div>
       <!-- /.container-fluid -->
-  </nav> 
+  </nav>
   <div class="container">
     <div class="row">
       <div class="col-md-4 content-margin-top">
@@ -138,7 +138,7 @@ try{
               <?php } ?>
               <span class="input-group-addon danger"><span class="glyphicon glyphicon-remove"></span></span>
             </div>
-            
+
       </div>
       <div class="form-group">
               <h5>投稿キー</h5>
@@ -151,12 +151,21 @@ try{
                   <?php } ?>
       </div>
       <?php if($name==''){ ?>
-      <button type="submit"  class="btn btn-primary col-xs-12" disabled>投稿する</button>
+      <button type="submit"  class="btn btn-danger col-xs-12" disabled>投稿する</button>
       <?php }elseif($name != ''){?>
       <input type='hidden' name='id' value='<?php echo "$id";?>'>
       <button type="submit"  name='update' class="btn btn-primary col-xs-12" disabled>書き直す</button>
       <?php } ?>
+      <br>
+      <br>
+      <p><a href="bbs.php?page=<?php echo "a"; ?>" class="btn btn-default">以前の投稿へ</a>
+      <a href="bbs.php?page=<?php echo "b"; ?>" class="btn btn-default">最新の投稿へ</a></p>
+      <!-- <ul class="paging">
+      <button type="submit" name="page"　class="btn btn-primary col-xs-4" disabled>
+      <li><a href="bbs.php?page=<?php echo "a"; ?>" class="btn btn-default">以前の投稿へ</a></li>
+      </ul> -->
     </form>
+
 
       </div>
 
@@ -172,18 +181,18 @@ try{
                     <i class="entypo-feather"></i>
                     <i class="fa fa-play-circle"></i>
                 </div>
-                
+
                 <div class="timeline-label">
-                    <h2><a href="kekka.php?id=<?php echo h($post['gameid']); ?>"><?php echo h($post['gamename']); ?></a> 
+                    <h2><a href="kekka.php?id=<?php echo h($post['gameid']); ?>"><?php echo h($post['gamename']); ?></a>
                       <?php
                           //一旦日時型に変換
                           $gameday = strtotime($post['gameday']);
                           //書式を変換
-                          $gameday = date('Y/m/d',$gameday);                          
+                          $gameday = date('Y/m/d',$gameday);
                       ?>
                       <span><?php echo h($gameday);?></span>
                       <a href="bbs.php?action=edit&id=<?php echo h($post['gameid']);?>"><i class="fa fa-pencil-square-o"></i>
-                      <?php foreach ($re as $po ) { 
+                      <?php foreach ($re as $po ) {
                         if ($po['gameid'] == $post['gameid']) { ?>
                       <p><a href="kekka.php?id=<?php echo h($post['gameid']); ?>">最新投稿:<Font size="3"><strong><?php echo h($po['result']); ?><strong></p>
                       <?php } }?>
@@ -191,7 +200,7 @@ try{
                     <!--<a href="bbs.php?action=edit&id=<?php //echo $post['id'];?>"><i class="fa fa-pencil-square-o"></i>-->
                     <!--<p><?php //echo $post['comment'];?></br>
                       <a href="bbspr2.php?action=delete&id=<?php //echo $post['id'];?>"><i class="fa fa-trash-o"></i></a>
-                    </p>-->   
+                    </p>-->
             </div>
 
         </article>
@@ -212,7 +221,7 @@ try{
 
     </div>
   </div>
- 
+
 
 
 
