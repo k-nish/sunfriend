@@ -2,12 +2,13 @@
 $error = array(); 
 if (isset($_POST)&&!empty($_POST)) {
     if ($_POST['id'] == '2014'&&$_POST['pass'] == '1008') {
-        header('Location: bbs.php');
+      echo 'OK!';
+        //header('Location: bbs.php');
     }
     if (($_POST['id']!='2014')&&($_POST['pass']=='1008')) {
         $error['id'] = 'wrong';
     }    
-    if (($error['id']=='2014')&&($_POST['pass']!='1008')) {
+    if (($_POST['id']=='2014')&&($_POST['pass']!='1008')) {
         $error['pass'] = 'wrong';
     }
 }
@@ -46,7 +47,7 @@ if (isset($_POST['pass'])&&$_POST['pass']=='') {
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
-              </button> 
+              </button>
               <a class="navbar-brand" href="index.php"><span class="strong-title"><i class="fa fa-sun-o"></i> 実況掲示板ログインページ!</span></a>
           </div>
           <!-- Collect the nav links, forms, and other content for toggling -->
@@ -69,12 +70,12 @@ if (isset($_POST['pass'])&&$_POST['pass']=='') {
           <!-- /.navbar-collapse -->
       </div>
       <!-- /.container-fluid -->
-  </nav> 
+  </nav>
   <div class="container">
     <div class="row">
       <div class="col-md-4 content-margin-top">
 
-    <form action="bbs.php" method="post">
+    <form action="index.php" method="post">
       <div class="form-group">
           <h5>ID</h5>
             <div class="input-group">
@@ -85,7 +86,7 @@ if (isset($_POST['pass'])&&$_POST['pass']=='') {
               <?php endif ?>
               <span class="input-group-addon danger"><span class="glyphicon glyphicon-remove"></span></span>
             </div>
-            
+
       </div>
       <div class="form-group">
               <h5>Password</h5>
@@ -112,7 +113,7 @@ if (isset($_POST['pass'])&&$_POST['pass']=='') {
 
 
 
-  
+
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   <!-- Include all compiled plugins (below), or include individual files as needed -->
