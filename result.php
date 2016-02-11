@@ -1,66 +1,63 @@
 <?php
 try{
-  //echo 'POST送信された！';
-  //データベースに接続
-  // ステップ1.db接続
-  $dsn = 'mysql:dbname=sunfriend;host=localhost';
-  // 接続するためのユーザー情報
-  $user = 'root';
-  $password = '';
-  // DB接続オブジェクトを作成
-  $dbh = new PDO($dsn,$user,$password);
-  // 接続したDBオブジェクトで文字コードutf8を使うように指定
-  $dbh->query('SET NAMES utf8');
+  require('db.php');
+
+  function h($value){
+    return htmlspecialchars($value,ENT_QUOTES,'UTF-8');
+  }
 
   $id ='';
   if (isset($_GET['id'])&&!empty($_GET['id'])) {
     $id = $_GET['id'];
   }
-  
+
   if (isset($_GET['action'])&&($_GET['action']=='delete')) {
-      $sq= 'SELECT `gameid` FROM `results` WHERE `id`='.$_GET['id'];
-      $stm=$dbh->prepare($sq);
-      $stm->execute();
-      $req  = $stm->fetch(PDO::FETCH_ASSOC);
-      var_dump($req);
+      $sq= sprintf('SELECT `gameid` FROM `results` WHERE `id`="%d"',
+           mysqli_real_escape_string($db,$sq));
+      $stmt = mysqli_query($db,$sq) or die(mysqli_error($db));
+      $req = mysqli_fetch_assoc($stmt);
       $id = $req['gameid'];
 
-      $sql='DELETE FROM `results` WHERE `id`='.$_GET['id'];
-      $stmt=$dbh->prepare($sql);
-      $stmt->execute();
-      header('Location: result.php?id='.$id);
+      $sql=sprintf('DELETE FROM `results` WHERE `id`="%d"',
+           mysqli_real_escape_string($db,$id));
+      $stmt = mysqli_query($db,$sql) or die(mysqli_error($db));
+      header('Location: $result.php?id='.$id);
   }
 
-  if(isset($_POST) && !empty($_POST)){
-      if($_POST['key']=='sun'){
-          $gresult = mb_convert_kana($_POST['result'],'sa','UTF-8');
-          $gyears = mb_convert_kana($_POST['years'],'sa','UTF-8');
-          $sql = 'INSERT INTO `results`(`id`, `result`, `years`, `date`, `gameid`) 
-              VALUES (null,"'.$_POST['result'].'","'.$_POST['years'].'",now(),'.$id.')';
-          //sql正しいか確認すべし
-          $stmt=$dbh->prepare($sql);
-          $stmt->execute();
-          $id=$_POST['id'];
-          header('Location: kekka.php?id='.$id);
-      }
-  }
+  // $error = array();
+  // if(isset($_POST) && !empty($_POST)){
+  //     if(mb_convert_kana($_POST['key'],'r','UTF-8')=='sun'){
+          // $gresult = mb_convert_kana($_POST['result'],'sa','UTF-8');
+          // $gyears = mb_convert_kana($_POST['years'],'sa','UTF-8');
+          // $sql = sprintf('INSERT INTO `results`(`id`, `result`, `years`, `date`, `gameid`) VALUES (null,"%s","%s",now(),"%d")',
+          //     mysqli_real_escape_string($db,$gresult),
+          //     mysqli_real_escape_string($db,$gyears),
+          //     mysqli_real_escape_string($db,$_POST['id']));
+          // $stmt = mysqli_query($db,$sql) or die(mysqli_error($db));
+          // $id=$_POST['id'];
+          // header('Location: kekka.php?id='.$id);
+  //     }elseif(mb_convert_kana($_POST['key'],'r','UTF-8') !='sun'){
+  //         $error['key'] = 'wrong';
+  //         $id = $_POST['id'];
+  //     }
+  // }
 
-  $sql = 'SELECT * FROM `results` WHERE gameid = '.$id.' ORDER BY `id` DESC';
-  $stmt = $dbh->prepare($sql);
-  $stmt->execute();
+  $sql = sprintf('SELECT * FROM `results` WHERE gameid = %d ORDER BY `id` DESC',
+            mysqli_real_escape_string($db,$id));
+  $stmt = mysqli_query($db,$sql) or die(mysqli_error($db));
   $posts = array();
   while(1){
-      $rec = $stmt->fetch(PDO::FETCH_ASSOC);
+      $rec = mysqli_fetch_assoc($stmt);
       if($rec == false){
           break;
       }
       $posts[]=$rec;
   }
 
-  $sq = 'SELECT * FROM `names` WHERE gameid ='.$id;
-  $stmt=$dbh->prepare($sq);
-  $stmt->execute();
-  $rec = $stmt->fetch(PDO::FETCH_ASSOC);
+  $sq = sprintf('SELECT * FROM `names` WHERE gameid ="%d"',
+           mysqli_real_escape_string($db,$id));
+  $stmt = mysqli_query($db,$sq) or die(mysqli_error($db));
+  $rec = mysqli_fetch_assoc($stmt);
   $name = $rec['gamename'];
 
     $dbh=null;
@@ -79,7 +76,7 @@ try{
   <link rel="stylesheet" href="assets/css/timeline.css">
   <link rel="stylesheet" href="assets/css/main.css">
   <link rel="shotcut icon"  href="assets/favicon.ico">
-  
+
   <script type="text/javascript">
   function destroy(id){
     if (confirm('削除しますか')) {
@@ -92,8 +89,8 @@ try{
   </script>
 </head>
 <body>
-  <nav class="navbar navbar-default navbar-fixed-top"> 
-      <div class="container"> 
+  <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
           <!-- Brand and toggle get grouped for better mobile display -->
           <div class="navbar-header page-scroll">
               <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
@@ -102,7 +99,7 @@ try{
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
               </button>
-              <a class="navbar-brand" href="edit.php"><span class="strong-title"><i class="fa fa-sun-o"></i>管理用ホームページ<?php echo $name; ?></span></a>
+              <a class="navbar-brand" href="edit.php"><span class="strong-title"><i class="fa fa-sun-o"></i>管理用ホームページ<?php echo h($name); ?></span></a>
           </div>
           <!-- Collect the nav links, forms, and other content for toggling -->
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -124,12 +121,12 @@ try{
           <!-- /.navbar-collapse -->
       </div>
       <!-- /.container-fluid -->
-  </nav> 
+  </nav>
   <div class="container">
     <div class="row">
       <div class="col-md-4 content-margin-top">
 
-    <form action="result.php&id=<?php echo $id; ?>" method="post">
+    <!-- <form action="result.php&id=<?php echo h($id); ?>" method="post">
       <div class="form-group">
             <h5>学年(何か書いてね)</h5>
             <div class="input-group">
@@ -138,11 +135,11 @@ try{
 
               <span class="input-group-addon danger"><span class="glyphicon glyphicon-remove"></span></span>
             </div>
-            
+
       </div>
       <div class="form-group">
             <h5>結果(何か入力してね)</h5>
-            <div class="input-group" data-validate="length" data-length="1">  
+            <div class="input-group" data-validate="length" data-length="1">
               <textarea type="text" class="form-control" name="result" id="validate-length" placeholder="結果 ex.ファイナルイン!" required></textarea>
               <span class="input-group-addon danger"><span class="glyphicon glyphicon-remove"></span></span>
             </div>
@@ -155,12 +152,12 @@ try{
 
               <span class="input-group-addon danger"><span class="glyphicon glyphicon-remove"></span></span>
             </div>
-            
+
       </div>
       <h5>実況投稿!</h5>
-      <input type="hidden" name="id" value=<?php echo $id; ?>>
+      <input type="hidden" name="id" value=<?php echo h($id); ?>>
       <button type="submit"  name='report' class="btn btn-primary col-xs-12" disabled>実況する!</button>
-    </form>
+    </form> -->
 
       </div>
       <div class="col-md-8 content-margin-top">
@@ -178,21 +175,21 @@ try{
                 </div>
 
                 <div class="timeline-label">
-                    <h2><a href="#"><?php echo $post['years'];?></a> 
+                    <h2><a href="#"><?php echo h($post['years']);?></a>
                       <?php
                           //一旦日時型に変換
                           $date = strtotime($post['date']);
 
                           //書式を変換
-                          $date = date('Y/m/d',$date);                          
+                          $date = date('Y/m/d',$date);
                       ?>
 
-                      <span><?php echo $date;?></span>
+                      <span><?php echo h($date);?></span>
                     </h2>
-                    <p><Font size="4"><strong><?php echo $post['result'];?><strong></br>
-                      <a href="#" onclick="destroy(<?php echo $post['id']; ?>)"><i class="fa fa-trash-o"></i></a>
+                    <p><Font size="4"><strong><?php echo h($post['result']);?><strong></br>
+                      <a href="#" onclick="destroy(<?php echo h($post['id']); ?>)"><i class="fa fa-trash-o"></i></a>
                     </p>
-                    
+
             </div>
 
         </article>

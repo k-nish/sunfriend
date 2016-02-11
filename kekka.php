@@ -24,7 +24,7 @@ try{
           $stmt = mysqli_query($db,$sql) or die(mysqli_error($db));
           $id=$_POST['id'];
           header('Location: kekka.php?id='.$id);
-      }elseif($_POST['key']!='sun'){
+      }elseif(mb_convert_kana($_POST['key'],'r','UTF-8') !='sun'){
           $error['key'] = 'wrong';
           $id=$_POST['id'];
       }

@@ -1,4 +1,4 @@
-<?php 
+<?php
 try{
  require('db.php');
 
@@ -10,17 +10,17 @@ try{
  function h($value){
   return htmlspecialchars($value,ENT_QUOTES,'UTF-8');
  }
- 
+
  if(isset($_GET['action'])&& ($_GET['action']=='edit')) {
-     $sql = sprintf('SELECT * FROM `names` WHERE gameid=%d',
+     $sql = sprintf('SELECT * FROM `names` WHERE gameid="%d"',
               mysqli_real_escape_string($db,$_GET['id']));
      $stmt = mysqli_query($db,$sql) or die(mysqli_error($db));
      $rec = mysqli_fetch_assoc($stmt);
      $id = $rec['gameid'];
      $name = $rec['gamename'];
-     $day = $rec['gameday']; 
+     $day = $rec['gameday'];
  }
- 
+
 if (isset($_GET['action'])&&($_GET['action'] == 'delete')) {
     $sql = sprintf('DELETE FROM `names` WHERE `gameid`=%d',
               mysqli_real_escape_string($db,$_GET['id']));
@@ -31,21 +31,21 @@ if (isset($_GET['action'])&&($_GET['action'] == 'delete')) {
 $error = array();
 if(isset($_POST)&&!empty($_POST)){
     if(isset($_POST['key']) && !empty($_POST['key'])){
-        if ($_POST['key']=='sun') {
+        if (mb_convert_kana($_POST['key'],'r','UTF-8')=='sun') {
             if(isset($_POST['update'])){
                 $gname = mb_convert_kana($_POST['gamename'],'sa','UTF-8');
                 $sql = sprintf('UPDATE `names` SET `gamename`=%s,gameday=now() WHERE `gameid`=%d',
                          mysqli_real_escape_string($db,$gname),
                          mysqli_real_escape_string($db,$_POST['id']));
                 $stmt = mysqli_query($db,$sql) or die(mysqli_error($db));
-            }elseif(isset($_POST['gamename'])) {
-                $gname = mb_convert_kana($_POST['gamename'],'sa','UTF-8');
-                $sql = sprintf('INSERT INTO `names`(`gameid`, `gamename`, `gameday`) VALUES (null,%s,now())',
-                         mysqli_real_escape_string($db,$gname));
-                $stmt = mysqli_query($db,$sql) or die(mysqli_error($db));
-                header('Location: bbs.php');
+            // }elseif(isset($_POST['gamename'])) {
+            //     $gname = mb_convert_kana($_POST['gamename'],'sa','UTF-8');
+            //     $sql = sprintf('INSERT INTO `names`(`gameid`, `gamename`, `gameday`) VALUES (null,%s,now())',
+            //              mysqli_real_escape_string($db,$gname));
+            //     $stmt = mysqli_query($db,$sql) or die(mysqli_error($db));
+            //     header('Location: bbs.php');
             }
-        }elseif($_POST['key'] != 'sun'){
+        }elseif(mb_convert_kana($_POST['key'],'r','UTF-8') != 'sun'){
             $error['key'] = 'wrong';
         }
     }
@@ -59,7 +59,7 @@ if(isset($_POST)&&!empty($_POST)){
       if ($rec == false) {
           break;
       }
-       $sun[] = $rec; 
+       $sun[] = $rec;
     }
 
   $re = array();
@@ -114,7 +114,7 @@ if(isset($_POST)&&!empty($_POST)){
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
-              </button> 
+              </button>
               <a class="navbar-brand" href="#page-top"><span class="strong-title"><i class="fa fa-sun-o"></i> 実況掲示板管理人編集ページ</span></a>
           </div>
           <!-- Collect the nav links, forms, and other content for toggling -->
@@ -142,13 +142,13 @@ if(isset($_POST)&&!empty($_POST)){
     <div class="row">
       <div class="col-md-4 content-margin-top">
 
-    <form action="bbs.php" method="post">
+    <form action="edit.php" method="post">
       <div class="form-group">
           <h5>試合名</h5>
             <div class="input-group">
               <?php if (isset($error['key'])&&($error['key']=='wrong')) { ?>
               <input type="text" name="gamename" class="form-control"
-                       id="validate-text" placeholder="試合名 ex.団体戦vs東大トマトMD1" value="<?php echo $_POST['gamename'];?>" required>
+                       id="validate-text" placeholder="試合名 ex.団体戦vs東大トマトMD1" value="<?php echo h($_POST['gamename']);?>" required>
               <?php }else{ ?>
               <input type="text" name="gamename" class="form-control"
                        id="validate-text" placeholder="試合名 ex.団体戦vs東大トマトMD1" value="<?php echo h($name);?>" required>
@@ -166,12 +166,12 @@ if(isset($_POST)&&!empty($_POST)){
                   <p class="error">*正しい投稿キーを入力してください。</p>
                   <?php } ?>
       </div>
-      <?php if($name==''){ ?>
+      <!--<?php if($name==''){ ?>
       <button type="submit"  class="btn btn-primary col-xs-12" disabled>投稿する</button>
-      <?php }elseif($name != ''){?>
+      <?php }elseif($name != ''){?>-->
       <input type='hidden' name='id' value='<?php echo "$id";?>'>
       <button type="submit"  name='update' class="btn btn-primary col-xs-12" disabled>書き直す</button>
-      <?php } ?>
+      <!--<?php } ?>-->
     </form>
 
       </div>
@@ -193,12 +193,12 @@ if(isset($_POST)&&!empty($_POST)){
                 </div>
 
                 <div class="timeline-label">
-                    <h2><a href="#"><?php echo h($post['gamename']); ?></a> 
+                    <h2><a href="#"><?php echo h($post['gamename']); ?></a>
                       <?php
                           //一旦日時型に変換
                           $gameday = strtotime($post['gameday']);
                           //書式を変換
-                          $gameday = date('Y/m/d',$gameday);                          
+                          $gameday = date('Y/m/d',$gameday);
                       ?>
                       <span><a href="result.php?id=<?php echo h($post['gameid']); ?>"><?php echo h($gameday);?></span>
                       <a href="edit.php?action=edit&id=<?php echo h($post['gameid']);?>"><i class="fa fa-pencil-square-o"></i>
