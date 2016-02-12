@@ -1,8 +1,16 @@
-<?php 
+<?php
+$error = array();
 if (isset($_POST)&&!empty($_POST)) {
-    if (($_POST['id'] == '1973')&&($_POST['passw'])=='netue') {
+    if (($_POST['id'] == '1973')&&($_POST['pass'])=='netue') {
       header('Location: edit.php');
     }
+    if (($_POST['id']!='1973')&&($_POST['pass']=='netue')) {
+        $error['id'] = 'wrong';
+    }
+    if (($_POST['id']=='1973')&&($_POST['pass']!='netue')) {
+        $error['pass'] = 'wrong';
+    }
+var_dump($error);
 }
   ?>
 
@@ -31,7 +39,7 @@ if (isset($_POST)&&!empty($_POST)) {
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
-              </button> 
+              </button>
               <a class="navbar-brand" href="check.php"><span class="strong-title"><i class="fa fa-sun-o"></i> 管理者ログインページ</span></a>
           </div>
           <!-- Collect the nav links, forms, and other content for toggling -->
@@ -41,7 +49,7 @@ if (isset($_POST)&&!empty($_POST)) {
                       <a href="bbs.php">実況掲示板TOPへ</a>
                   </li> -->
                   <li class="page-scroll">
-                      <a href="bbs.php">実況掲示板TOPへ</a>
+                      <a href="index.php">実況掲示板TOPへ</a>
                   </li>
                   <li class="page-scroll">
                       <a href="check.php">編集用ページ</a>
@@ -54,21 +62,27 @@ if (isset($_POST)&&!empty($_POST)) {
           <!-- /.navbar-collapse -->
       </div>
       <!-- /.container-fluid -->
-  </nav> 
+  </nav>
   <div class="container">
     <div class="row">
       <div class="col-md-4 content-margin-top">
 
-    <form action="edit.php" method="post">
+    <form action="check.php" method="post">
       <div class="form-group">
           <h5>ID</h5>
             <div class="input-group">
+              <?php if (isset($error['pass'])&&$error['pass']=='wrong') { ?>
+              <input type="text" name="id" class="form-control"
+                       id="validate-text" placeholder="ID" value="<?php echo $_POST['id']; ?>" required>
+              <?php }else{ ?>
               <input type="text" name="id" class="form-control"
                        id="validate-text" placeholder="ID" required>
-
+              <?php } ?>
               <span class="input-group-addon danger"><span class="glyphicon glyphicon-remove"></span></span>
             </div>
-            
+            <?php if (isset($error['id'])&&$error['id']=='wrong'): ?>
+            <p class='error'>*正しいIDを入力してください。</p>
+            <?php endif; ?>
       </div>
       <div class="form-group">
               <h5>Password</h5>
@@ -77,7 +91,7 @@ if (isset($_POST)&&!empty($_POST)) {
                   <span class="input-group-addon danger"><span class="glyphicon glyphicon-remove"></span></span>
                   </div>
       </div>
-      <button type="submit" href="edit.php" class="btn btn-primary col-xs-12" disabled>ログイン</button>
+      <button type="submit" href="edit.php" class="btn btn-danger col-xs-12" disabled>ログイン</button>
     </form>
 
       </div>
@@ -95,7 +109,7 @@ if (isset($_POST)&&!empty($_POST)) {
 
 
 
-  
+
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   <!-- Include all compiled plugins (below), or include individual files as needed -->

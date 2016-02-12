@@ -63,7 +63,7 @@ if(isset($_POST)&&!empty($_POST)){
     }
 
   $re = array();
-  $sq = 'SELECT `g1`.`result`,`g1`.`date`,`g1`.`gameid` FROM `results` as `g1` 
+  $sq = 'SELECT `g1`.`result`,`g1`.`date`,`g1`.`gameid` FROM `results` as `g1`
          WHERE `g1`.`date`=(SELECT MAX(`g2`.`date`) FROM `results` as `g2` WHERE `g2`.`gameid` = `g1`.`gameid`) ORDER BY `gameid` DESC';
   $stmt = mysqli_query($db,$sq) or die(mysqli_error($db));
   while (1) {
@@ -159,7 +159,7 @@ if(isset($_POST)&&!empty($_POST)){
       <div class="form-group">
               <h5>投稿キー</h5>
                   <div class="input-group" data-validate="length" data-length="3">
-                  <input type="text" class="form-control" name="key" id="validate-length" placeholder="投稿キー　　ヒントは...." required></textarea>
+                  <input type="text" class="form-control" name="key" id="validate-length" placeholder="投稿キー  ヒントは...." required></textarea>
                   <span class="input-group-addon danger"><span class="glyphicon glyphicon-remove"></span></span>
                   </div>
                   <?php if (isset($error['key'])&&($error['key']=='wrong')) { ?>
@@ -170,7 +170,7 @@ if(isset($_POST)&&!empty($_POST)){
       <button type="submit"  class="btn btn-primary col-xs-12" disabled>投稿する</button>
       <?php }elseif($name != ''){?>-->
       <input type='hidden' name='id' value='<?php echo "$id";?>'>
-      <button type="submit"  name='update' class="btn btn-primary col-xs-12" disabled>書き直す</button>
+      <button type="submit"  name='update' class="btn btn-danger col-xs-12" disabled>書き直す</button>
       <!--<?php } ?>-->
     </form>
 

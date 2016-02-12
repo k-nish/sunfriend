@@ -1,24 +1,21 @@
 <?php
-$error = array(); 
+$error = array();
 if (isset($_POST)&&!empty($_POST)) {
     if ($_POST['id'] == '2014'&&$_POST['pass'] == '1008') {
-      echo 'OK!';
-        //header('Location: bbs.php');
+        header('Location: bbs.php');
     }
     if (($_POST['id']!='2014')&&($_POST['pass']=='1008')) {
         $error['id'] = 'wrong';
-    }    
+    }
     if (($_POST['id']=='2014')&&($_POST['pass']!='1008')) {
         $error['pass'] = 'wrong';
     }
 }
 if (isset($_POST['id'])&&$_POST['id']=='') {
     $error['id'] = 'blank';
-    // var_dump($error['id']);
 }
 if (isset($_POST['pass'])&&$_POST['pass']=='') {
     $error['pass'] = 'blank';
-    // var_dump($error['pass']);
 }
 ?>
 
@@ -81,12 +78,11 @@ if (isset($_POST['pass'])&&$_POST['pass']=='') {
             <div class="input-group">
               <input type="text" name="id" class="form-control"
                        id="validate-text" placeholder="ID" required>
-              <?php if (isset($error['id'])&&$error['id']=='wrong'): ?>
-              <p class='error'>*正しいIDを入力してください。</p>
-              <?php endif ?>
               <span class="input-group-addon danger"><span class="glyphicon glyphicon-remove"></span></span>
             </div>
-
+            <?php if (isset($error['id'])&&$error['id']=='wrong'): ?>
+            <p class='error'>*正しいIDを入力してください。</p>
+            <?php endif; ?>
       </div>
       <div class="form-group">
               <h5>Password</h5>
@@ -95,7 +91,7 @@ if (isset($_POST['pass'])&&$_POST['pass']=='') {
                   <span class="input-group-addon danger"><span class="glyphicon glyphicon-remove"></span></span>
                   </div>
       </div>
-      <button type="submit" href="index.php" class="btn btn-primary col-xs-12" disabled>ログイン!</button>
+      <button type="submit" href="index.php" class="btn btn-danger col-xs-12" disabled>ログイン!</button>
     </form>
 
       </div>

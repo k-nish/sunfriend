@@ -12,6 +12,7 @@ try{
     return htmlspecialchars($value,ENT_QUOTES,'UTF-8');
 }
 
+ //編集するための編集元の情報を表示
  if(isset($_GET['action'])&& ($_GET['action']=='edit')) {
      $sql = sprintf('SELECT * FROM `names` WHERE gameid=%d',
           mysqli_real_escape_string($db,$_GET['id']));
@@ -22,6 +23,7 @@ try{
      $day = $rec['gameday'];
  }
 
+ //投稿をinsert or 編集を記録
  if(isset($_POST)&&!empty($_POST)){
      if(isset($_POST['key']) && !empty($_POST['key'])){
          if ($_POST['key']=='sun') {
@@ -36,7 +38,15 @@ try{
                  $sql = sprintf('INSERT INTO `names`(`gameid`, `gamename`, `gameday`) VALUES (null,"%s",now())',
                      mysqli_real_escape_string($db,$gname));
                  $stmt = mysqli_query($db,$sql) or die(mysqli_error($db));
-                 header('Location: bbs.php');
+
+                 $new = array();
+                 $sq = 'SELECT `gameid` FROM `names` ORDER BY `gameday` DESC';
+                 $stmt = mysqli_query($db,$sq) or die(mysqli_error($db));
+                 $new['gameid'] = mysqli_fetch_assoc($stmt);
+                 var_dump($new['gameid']);
+                 if(isset($new['gameid'])){
+                 // header('Location: kekka.php?id=<?php echo $new['gameid'];?>');
+                 }
             }
          }elseif($_POST['key']!='sun'){
              $error['key'] = 'wrong';
@@ -44,6 +54,7 @@ try{
       }
   }
 
+  //試合名を取得
   $sun = array();
   $sql = 'SELECT * FROM `names` WHERE 1 ORDER BY `gameid` DESC';
   $stmt = mysqli_query($db,$sql) or die(mysqli_error($db));
@@ -55,7 +66,7 @@ try{
        $sun[] = $rec;
     }
 
-
+  //最新投稿を取得
   $re = array();
   $sq = 'SELECT `g1`.`result`,`g1`.`date`,`g1`.`gameid` FROM `results` as `g1` 
          WHERE `g1`.`date`=(SELECT MAX(`g2`.`date`) FROM `results` as `g2` WHERE `g2`.`gameid` = `g1`.`gameid`) ORDER BY `gameid` DESC';
@@ -103,18 +114,12 @@ try{
           <!-- Collect the nav links, forms, and other content for toggling -->
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
               <ul class="nav navbar-nav navbar-right">
-                  <!-- <li class="hidden">
-                      <a href="bbs.php">実況掲示板TOPへ</a>
-                  </li> -->
                   <li class="page-scroll">
                       <a href="bbs.php">実況掲示板TOPへ</a>
                   </li>
                   <li class="page-scroll">
                       <a href="check.php">編集用ページ</a>
                   </li>
-                  <!-- <li class="page-scroll">
-                      <a href="#contact">Contact</a>
-                  </li> -->
               </ul>
           </div>
           <!-- /.navbar-collapse -->
@@ -143,7 +148,7 @@ try{
       <div class="form-group">
               <h5>投稿キー</h5>
                   <div class="input-group" data-validate="length" data-length="3">
-                  <input type="text" class="form-control" name="key" id="validate-length" placeholder="投稿キー　　ヒントは...." required>
+                  <input type="text" class="form-control" name="key" id="validate-length" placeholder="投稿キー  ヒントは...." required>
                   <span class="input-group-addon danger"><span class="glyphicon glyphicon-remove"></span></span>
                   </div>
                   <?php if(isset($error['key'])&&$error['key']=='wrong'){ ?>
@@ -154,14 +159,14 @@ try{
       <button type="submit"  class="btn btn-danger col-xs-12" disabled>投稿する</button>
       <?php }elseif($name != ''){?>
       <input type='hidden' name='id' value='<?php echo "$id";?>'>
-      <button type="submit"  name='update' class="btn btn-primary col-xs-12" disabled>書き直す</button>
+      <button type="submit"  name='update' class="btn btn-danger col-xs-12" disabled>書き直す</button>
       <?php } ?>
       <br>
       <br>
       <p><a href="bbs.php?page=<?php echo "a"; ?>" class="btn btn-default">以前の投稿へ</a>
       <a href="bbs.php?page=<?php echo "b"; ?>" class="btn btn-default">最新の投稿へ</a></p>
       <!-- <ul class="paging">
-      <button type="submit" name="page"　class="btn btn-primary col-xs-4" disabled>
+      <button type="submit" name="page" class="btn btn-primary col-xs-4" disabled>
       <li><a href="bbs.php?page=<?php echo "a"; ?>" class="btn btn-default">以前の投稿へ</a></li>
       </ul> -->
     </form>

@@ -1,7 +1,7 @@
 <?php
 try{
   require('db.php');
- 
+
   function h($value){
     return htmlspecialchars($value,ENT_QUOTES,'UTF-8');
 }
@@ -10,7 +10,7 @@ try{
   if (isset($_GET)&&!empty($_GET)) {
     $id = $_GET['id'];
   }
-  
+
   $error = array();
   if(isset($_POST) && !empty($_POST)){
       if(mb_convert_kana($_POST['key'],'r','UTF-8')=='sun'){
@@ -67,8 +67,8 @@ try{
 
 </head>
 <body>
-  <nav class="navbar navbar-default navbar-fixed-top"> 
-      <div class="container"> 
+  <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
           <!-- Brand and toggle get grouped for better mobile display -->
           <div class="navbar-header page-scroll">
               <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
@@ -118,13 +118,13 @@ try{
               <?php } ?>
               <span class="input-group-addon danger"><span class="glyphicon glyphicon-remove"></span></span>
             </div>
-            
+
       </div>
       <div class="form-group">
             <h5>結果(何か入力してね)</h5>
-            <div class="input-group" data-validate="length" data-length="1">  
+            <div class="input-group" data-validate="length" data-length="1">
               <?php if (isset($error['key'])&&($error['key']=='wrong')) { ?>
-              <input type="text" class="form-control" name="result" id="validate-length" 
+              <input type="text" class="form-control" name="result" id="validate-length"
                   placeholder="結果 ex.ファイナルイン!" value="<?php echo h($_POST['result']); ?>" required>
               <?php }else{ ?>
               <input type="text" class="form-control" name="result" id="validate-length" placeholder="結果 ex.ファイナルイン!" required>
@@ -146,7 +146,7 @@ try{
       </div>
       <h5>実況投稿!</h5>
       <input type="hidden" name="id" value=<?php echo h($id); ?>>
-      <button type="submit"  name='report' class="btn btn-primary col-xs-12" disabled>実況する!</button>
+      <button type="submit"  name='report' class="btn btn-danger col-xs-12" disabled>実況する!</button>
     </form>
 
       </div>
