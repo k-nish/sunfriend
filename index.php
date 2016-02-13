@@ -1,13 +1,22 @@
 <?php
 $error = array();
+
+require('db.php');
+
+$sql = 'SELECT * FROM `secret` WHERE 1';
+$stmt = mysqli_query($db,$sql) or die(mysqli_error($db));
+$rec = mysqli_fetch_assoc($stmt);
+$id = $rec['id'];
+$pass = $rec['pass'];
+
 if (isset($_POST)&&!empty($_POST)) {
-    if ($_POST['id'] == '2014'&&$_POST['pass'] == '1008') {
+    if ($_POST['id'] == $id &&$_POST['pass'] == $pass) {
         header('Location: bbs.php');
     }
-    if (($_POST['id']!='2014')&&($_POST['pass']=='1008')) {
+    if (($_POST['id']!= $id )&&($_POST['pass']== $pass)) {
         $error['id'] = 'wrong';
     }
-    if (($_POST['id']=='2014')&&($_POST['pass']!='1008')) {
+    if (($_POST['id']==$id )&&($_POST['pass']!= $pass)) {
         $error['pass'] = 'wrong';
     }
 }

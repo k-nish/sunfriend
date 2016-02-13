@@ -8,6 +8,11 @@ try{
  $key = '';
  $error = array();
 
+$sql = 'SELECT * FROM `secret` WHERE 1';
+$stmt = mysqli_query($db,$sql) or die(mysqli_error($db));
+$rec = mysqli_fetch_assoc($stmt);
+$pass = $rec['toukou'];
+
  function h($value){
     return htmlspecialchars($value,ENT_QUOTES,'UTF-8');
 }
@@ -44,7 +49,7 @@ $start = max($start,0);
  //投稿をinsert or 編集を記録
  if(isset($_POST)&&!empty($_POST)){
      if(isset($_POST['key']) && !empty($_POST['key'])){
-         if ($_POST['key']=='sun') {
+         if (mb_convert_kana($_POST['key'],'r','UTF-8')==$pass) {
              if(isset($_POST['update'])){
                  $gname = mb_convert_kana($_POST['gamename'],'sa','UTF-8');
                  $sql = sprintf('UPDATE `names` SET `gamename`="%s",gameday=now() WHERE `gameid`="%d"',
@@ -69,7 +74,7 @@ $start = max($start,0);
                  $stmtt = mysqli_query($db,$sqls) or die(mysqli_error($db));
                  header('Location: bbs.php');
             }
-         }elseif($_POST['key']!='sun'){
+         }elseif($_POST['key']!=$pass){
              $error['key'] = 'wrong';
          }
       }
@@ -238,38 +243,6 @@ $start = max($start,0);
         </article>
         <?php }  ?>
 
-        <!--<?php foreach($sun as $post) { ?>
-        <article class="timeline-entry">
-            <div class="timeline-entry-inner">
-                <a href="kekka.php?id=<?php echo $post['gameid']; ?>">
-                <div class="timeline-icon bg-info">
-                    <i class="entypo-feather"></i>
-                    <i class="fa fa-play-circle"></i>
-                </div>
-
-                <div class="timeline-label">
-                    <h2><a href="kekka.php?id=<?php echo h($post['gameid']); ?>"><?php echo h($post['gamename']); ?></a>
-                      <?php
-                          //一旦日時型に変換
-                          $gameday = strtotime($post['gameday']);
-                          //書式を変換
-                          $gameday = date('Y/m/d',$gameday);
-                      ?>
-                      <span><?php echo h($gameday);?></span>
-                      <a href="bbs.php?action=edit&id=<?php echo h($post['gameid']);?>"><i class="fa fa-pencil-square-o"></i>
-                      <?php foreach ($re as $po ) {
-                        if ($po['gameid'] == $post['gameid']) { ?>
-                      <p><a href="kekka.php?id=<?php echo h($post['gameid']); ?>">最新投稿:<Font size="3"><strong><?php echo h($po['result']); ?><strong></p>
-                      <?php } }?>
-                    </h2>
-                    <!--<a href="bbs.php?action=edit&id=<?php //echo $post['id'];?>"><i class="fa fa-pencil-square-o"></i>-->
-                    <!--<p><?php //echo $post['comment'];?></br>
-                      <a href="bbspr2.php?action=delete&id=<?php //echo $post['id'];?>"><i class="fa fa-trash-o"></i></a>
-                    </p>-->
-            <!--</div>
-
-        </article>
-        <?php }  ?>-->
         <article class="timeline-entry begin">
 
             <div class="timeline-entry-inner">

@@ -11,6 +11,11 @@ try{
   return htmlspecialchars($value,ENT_QUOTES,'UTF-8');
  }
 
+$sql = 'SELECT * FROM `secret` WHERE 1';
+$stmt = mysqli_query($db,$sql) or die(mysqli_error($db));
+$rec = mysqli_fetch_assoc($stmt);
+$pass = $rec['toukou'];
+
  //ページング実装
 $page='';
 if(isset($_GET['page'])){
@@ -50,7 +55,7 @@ if (isset($_GET['action'])&&($_GET['action'] == 'delete')) {
 $error = array();
 if(isset($_POST)&&!empty($_POST)){
     if(isset($_POST['key']) && !empty($_POST['key'])){
-        if (mb_convert_kana($_POST['key'],'r','UTF-8')=='sun') {
+        if (mb_convert_kana($_POST['key'],'r','UTF-8')==$pass) {
             if(isset($_POST['update'])){
                 $gname = mb_convert_kana($_POST['gamename'],'sa','UTF-8');
                 $sql = sprintf('UPDATE `names` SET `gamename`=%s,gameday=now() WHERE `gameid`=%d',
@@ -64,7 +69,7 @@ if(isset($_POST)&&!empty($_POST)){
             //     $stmt = mysqli_query($db,$sql) or die(mysqli_error($db));
             //     header('Location: bbs.php');
             }
-        }elseif(mb_convert_kana($_POST['key'],'r','UTF-8') != 'sun'){
+        }elseif(mb_convert_kana($_POST['key'],'r','UTF-8') != $pass){
             $error['key'] = 'wrong';
         }
     }

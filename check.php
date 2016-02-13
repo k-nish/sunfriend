@@ -1,16 +1,25 @@
 <?php
 $error = array();
+
+require('db.php');
+
+$sql = 'SELECT * FROM `secret` WHERE 1';
+$stmt = mysqli_query($db,$sql) or die(mysqli_error($db));
+$rec = mysqli_fetch_assoc($stmt);
+$id = $rec['editid'];
+$pass = $rec['editpass'];
+
 if (isset($_POST)&&!empty($_POST)) {
-    if (($_POST['id'] == '1973')&&($_POST['pass'])=='netue') {
+    if (($_POST['id'] == $id )&&($_POST['pass'])==$pass) {
       header('Location: edit.php');
     }
-    if (($_POST['id']!='1973')&&($_POST['pass']=='netue')) {
+    if (($_POST['id']!= $id)&&($_POST['pass'] == $pass)) {
         $error['id'] = 'wrong';
     }
-    if (($_POST['id']=='1973')&&($_POST['pass']!='netue')) {
+    if (($_POST['id']== $id)&&($_POST['pass']!= $pass)) {
         $error['pass'] = 'wrong';
     }
-var_dump($error);
+
 }
   ?>
 
