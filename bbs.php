@@ -34,19 +34,21 @@ try{
                      mysqli_real_escape_string($db,$_POST['id']));
                  $stmt = mysqli_query($db,$sql) or die(mysqli_error($db));
             }elseif(isset($_POST['gamename'])) {
+                 //試合名の登録
                  $gname = mb_convert_kana($_POST['gamename'],'sa','UTF-8');
                  $sql = sprintf('INSERT INTO `names`(`gameid`, `gamename`, `gameday`) VALUES (null,"%s",now())',
                      mysqli_real_escape_string($db,$gname));
                  $stmt = mysqli_query($db,$sql) or die(mysqli_error($db));
-
-                 $new = array();
-                 $sq = 'SELECT `gameid` FROM `names` ORDER BY `gameday` DESC';
-                 $stmt = mysqli_query($db,$sq) or die(mysqli_error($db));
-                 $new['gameid'] = mysqli_fetch_assoc($stmt);
-                 var_dump($new['gameid']);
-                 if(isset($new['gameid'])){
-                 // header('Location: kekka.php?id=<?php echo $new['gameid'];?>');
-                 }
+                 //gameidの取得
+                 $sq = 'SELECT `gameid` FROM `names` WHERE 1 ORDER BY `gameday` DESC';
+                 $stm = mysqli_query($db,$sq) or die(mysqli_error($db));
+                 $newid = mysqli_fetch_assoc($stm);
+                 //最初の投稿を登録
+                 $sqls = sprintf('INSERT INTO `results`SET `result`="%sの実況開始します!", `years`="sunfriend", `date`=now(), `gameid`=%d',
+                         mysqli_real_escape_string($db,$gname),
+                         mysqli_real_escape_string($db,$newid));
+                 $stmtt = mysqli_query($db,$sqls) or die(mysqli_error($db));
+                 header('Location: bbs.php');
             }
          }elseif($_POST['key']!='sun'){
              $error['key'] = 'wrong';
