@@ -36,17 +36,18 @@ try{
             }elseif(isset($_POST['gamename'])) {
                  //試合名の登録
                  $gname = mb_convert_kana($_POST['gamename'],'sa','UTF-8');
-                 $sql = sprintf('INSERT INTO `names`(`gameid`, `gamename`, `gameday`) VALUES (null,"%s",now())',
+                 $sql = sprintf('INSERT INTO `names`(`gamename`, `gameday`) VALUES ("%s",now())',
                      mysqli_real_escape_string($db,$gname));
                  $stmt = mysqli_query($db,$sql) or die(mysqli_error($db));
                  //gameidの取得
-                 $sq = 'SELECT `gameid` FROM `names` WHERE 1 ORDER BY `gameday` DESC';
+                 $newid = array();
+                 $sq = 'SELECT `gameid` FROM `names` WHERE 1 ORDER BY `gameday` DESC LIMIT 1';
                  $stm = mysqli_query($db,$sq) or die(mysqli_error($db));
-                 $newid = mysqli_fetch_assoc($stm);
+                 $newid['gameid'] = mysqli_fetch_assoc($stm);
                  //最初の投稿を登録
-                 $sqls = sprintf('INSERT INTO `results`SET `result`="%sの実況開始します!", `years`="sunfriend", `date`=now(), `gameid`=%d',
+                 $sqls = sprintf('INSERT INTO `results`SET `result`="%sの実況はじめます!", `years`="sunfriend", `date`=now(), `gameid`=%d',
                          mysqli_real_escape_string($db,$gname),
-                         mysqli_real_escape_string($db,$newid));
+                         mysqli_real_escape_string($db,$newid['gameid']));
                  $stmtt = mysqli_query($db,$sqls) or die(mysqli_error($db));
                  header('Location: bbs.php');
             }
@@ -70,7 +71,7 @@ try{
 
   //最新投稿を取得
   $re = array();
-  $sq = 'SELECT `g1`.`result`,`g1`.`date`,`g1`.`gameid` FROM `results` as `g1` 
+  $sq = 'SELECT `g1`.`result`,`g1`.`date`,`g1`.`gameid` FROM `results` as `g1`
          WHERE `g1`.`date`=(SELECT MAX(`g2`.`date`) FROM `results` as `g2` WHERE `g2`.`gameid` = `g1`.`gameid`) ORDER BY `gameid` DESC';
   $stmt = mysqli_query($db,$sq) or die(mysqli_error($db));
   while (1) {
@@ -81,6 +82,15 @@ try{
     $re[] =$req;
   }
 
+  //試合数を表示
+  $table = array();
+  $sqll = 'SELECT COUNT(*) AS cnt FROM `names` WHERE 1';
+  $record = mysqli_query($db,$sqll) or die(mysqli_error($db));
+  $table = mysqli_fetch_assoc($record);
+  echo $table['cnt'];
+
+  // var_dump($sun);
+  // var_dump($re);
   $dbh = null;
 
   ?>
@@ -167,20 +177,49 @@ try{
       <br>
       <p><a href="bbs.php?page=<?php echo "a"; ?>" class="btn btn-default">以前の投稿へ</a>
       <a href="bbs.php?page=<?php echo "b"; ?>" class="btn btn-default">最新の投稿へ</a></p>
-      <!-- <ul class="paging">
-      <button type="submit" name="page" class="btn btn-primary col-xs-4" disabled>
-      <li><a href="bbs.php?page=<?php echo "a"; ?>" class="btn btn-default">以前の投稿へ</a></li>
-      </ul> -->
     </form>
 
 
       </div>
 
       <div class="col-md-8 content-margin-top">
-      <p><strong>青のボタンを押すと各試合の実況が見れます!<strong></p>
+      <!--<p><strong>青のボタンを押すと各試合の実況が見れます!<strong></p>-->
         <div class="timeline-centered">
 
-        <?php foreach($sun as $post) { ?>
+        <?php foreach($re as $po) { ?>
+        <article class="timeline-entry">
+            <div class="timeline-entry-inner">
+                <a href="kekka.php?id=<?php echo $po['gameid']; ?>">
+                <div class="timeline-icon bg-info">
+                    <i class="entypo-feather"></i>
+                    <i class="fa fa-play-circle"></i>
+                </div>
+
+                <div class="timeline-label">
+                    <h2><a href="kekka.php?id=<?php echo h($po['gameid']); ?>">
+                    <?php foreach ($sun as $post) {
+                    if($post['gameid'] == $po['gameid']){
+                    if($post['gamename'] != ''){?>
+                    <?php echo h($post['gamename']); ?></a></br>
+                    <?php }else{ ?>
+                    <?php echo "この試合名は削除されました。" ?></a></br>
+                    <?php }}} ?>
+                      <?php
+                          //一旦日時型に変換
+                          $gameday = strtotime($po['date']);
+                          //書式を変換
+                          $gameday = date('Y/m/d',$gameday);
+                      ?>
+                      <span><?php echo h($gameday);?></span>
+                      <a href="bbs.php?action=edit&id=<?php echo h($po['gameid']); ?>"><i class="fa fa-pencil-square-o"></i>
+                      <p><a href="kekka.php?id=<?php echo h($po['gameid']); ?>">最新投稿:<Font size="3"><strong><?php echo h($po['result']); ?><strong></p>
+                    </h2>
+            </div>
+
+        </article>
+        <?php }  ?>
+
+        <!--<?php foreach($sun as $post) { ?>
         <article class="timeline-entry">
             <div class="timeline-entry-inner">
                 <a href="kekka.php?id=<?php echo $post['gameid']; ?>">
@@ -208,10 +247,10 @@ try{
                     <!--<p><?php //echo $post['comment'];?></br>
                       <a href="bbspr2.php?action=delete&id=<?php //echo $post['id'];?>"><i class="fa fa-trash-o"></i></a>
                     </p>-->
-            </div>
+            <!--</div>
 
         </article>
-        <?php }  ?>
+        <?php }  ?>-->
         <article class="timeline-entry begin">
 
             <div class="timeline-entry-inner">
