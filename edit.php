@@ -11,6 +11,25 @@ try{
   return htmlspecialchars($value,ENT_QUOTES,'UTF-8');
  }
 
+ //ページング実装
+$page='';
+if(isset($_GET['page'])){
+  $page = $_GET['page'];
+}
+if($page ==''){
+  $page = 1;
+}
+$page = max($page,1);
+//試合数を表示
+$table = array();
+$sqll = 'SELECT COUNT(*) AS cnt FROM `names` WHERE 1';
+$record = mysqli_query($db,$sqll) or die(mysqli_error($db));
+$table = mysqli_fetch_assoc($record);
+$maxpage = ceil($table['cnt']/6);
+$page = min($page,$maxpage);
+$start = ($page - 1)*6;
+$start = max($start,0);
+
  if(isset($_GET['action'])&& ($_GET['action']=='edit')) {
      $sql = sprintf('SELECT * FROM `names` WHERE gameid="%d"',
               mysqli_real_escape_string($db,$_GET['id']));
@@ -63,8 +82,9 @@ if(isset($_POST)&&!empty($_POST)){
     }
 
   $re = array();
-  $sq = 'SELECT `g1`.`result`,`g1`.`date`,`g1`.`gameid` FROM `results` as `g1`
-         WHERE `g1`.`date`=(SELECT MAX(`g2`.`date`) FROM `results` as `g2` WHERE `g2`.`gameid` = `g1`.`gameid`) ORDER BY `gameid` DESC';
+  $sq = sprintf('SELECT `g1`.`result`,`g1`.`date`,`g1`.`gameid` FROM `results` as `g1`
+         WHERE `g1`.`date`=(SELECT MAX(`g2`.`date`) FROM `results` as `g2` WHERE `g2`.`gameid` = `g1`.`gameid`) ORDER BY `date` DESC LIMIT %d,6',
+         mysqli_real_escape_string($db,$start));
   $stmt = mysqli_query($db,$sq) or die(mysqli_error($db));
   while (1) {
     $req = mysqli_fetch_assoc($stmt);
@@ -115,7 +135,7 @@ if(isset($_POST)&&!empty($_POST)){
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
               </button>
-              <a class="navbar-brand" href="#page-top"><span class="strong-title"><i class="fa fa-sun-o"></i> 実況掲示板管理人編集ページ</span></a>
+              <a class="navbar-brand" href="edit.php"><span class="strong-title"><i class="fa fa-sun-o"></i> 実況掲示板管理人編集ページ</span></a>
           </div>
           <!-- Collect the nav links, forms, and other content for toggling -->
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -137,7 +157,7 @@ if(isset($_POST)&&!empty($_POST)){
           <!-- /.navbar-collapse -->
       </div>
       <!-- /.container-fluid -->
-  </nav> 
+  </nav>
   <div class="container">
     <div class="row">
       <div class="col-md-4 content-margin-top">
@@ -166,12 +186,24 @@ if(isset($_POST)&&!empty($_POST)){
                   <p class="error">*正しい投稿キーを入力してください。</p>
                   <?php } ?>
       </div>
-      <!--<?php if($name==''){ ?>
-      <button type="submit"  class="btn btn-primary col-xs-12" disabled>投稿する</button>
-      <?php }elseif($name != ''){?>-->
+      <?php if(isset($_GET['action'])){ ?>
       <input type='hidden' name='id' value='<?php echo "$id";?>'>
       <button type="submit"  name='update' class="btn btn-danger col-xs-12" disabled>書き直す</button>
-      <!--<?php } ?>-->
+      <?php } ?>
+      <br>
+      <br>
+      <p>
+      <?php if ($page<$maxpage){ ?>
+      <a href="edit.php?page=<?php echo ($page + 1); ?>" class="btn btn-default">以前の投稿へ</a>
+      <?php }else{ ?>
+      最終ページだよ
+      <?php } ?>
+      <?php if ($page>1) { ?>
+      <a href="edit.php?page=<?php echo ($page - 1); ?>" class="btn btn-default">最新の投稿へ</a>
+      <?php }else{ ?>
+      最新のページだよ
+      <?php } ?>
+      </p>
     </form>
 
       </div>
@@ -180,8 +212,41 @@ if(isset($_POST)&&!empty($_POST)){
 
         <div class="timeline-centered">
 
-        <?php
-        foreach($sun as $post) { ?>
+        <?php foreach($re as $po) { ?>
+        <article class="timeline-entry">
+            <div class="timeline-entry-inner">
+                <a href="result.php?id=<?php echo $po['gameid']; ?>">
+                <div class="timeline-icon bg-info">
+                    <i class="entypo-feather"></i>
+                    <i class="fa fa-play-circle"></i>
+                </div>
+
+                <div class="timeline-label">
+                    <h2><a href="result.php?id=<?php echo h($po['gameid']); ?>">
+                    <?php foreach ($sun as $post) {
+                    if($post['gameid'] == $po['gameid']){
+                    if($post['gamename'] != ''){?>
+                    <?php echo h($post['gamename']); ?></a></br>
+                    <?php }else{ ?>
+                    <?php echo "この試合名は削除されました。" ?></a></br>
+                    <?php }}} ?>
+                      <?php
+                          //一旦日時型に変換
+                          $gameday = strtotime($po['date']);
+                          //書式を変換
+                          $gameday = date('Y/m/d',$gameday);
+                      ?>
+                      <span><?php echo h($gameday);?></span>
+                      <a href="bbs.php?action=edit&id=<?php echo h($po['gameid']); ?>"><i class="fa fa-pencil-square-o"></i>
+                      <a href="#" onclick="destroy(<?php echo h($post['gameid']);?>)"><i class="fa fa-trash-o"></i></a>
+                      <p><a href="kekka.php?id=<?php echo h($po['gameid']); ?>">最新投稿:<Font size="3"><strong><?php echo h($po['result']); ?><strong></p>
+                    </h2>
+            </div>
+
+        </article>
+        <?php }  ?>
+
+        <!--<?php foreach($sun as $post) { ?>
 
         <article class="timeline-entry">
 
@@ -214,7 +279,7 @@ if(isset($_POST)&&!empty($_POST)){
 
         <?php
         }
-        ?>
+        ?>-->
         <article class="timeline-entry begin">
 
             <div class="timeline-entry-inner">

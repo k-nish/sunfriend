@@ -11,6 +11,24 @@ try{
  function h($value){
     return htmlspecialchars($value,ENT_QUOTES,'UTF-8');
 }
+//ページング実装
+$page='';
+if(isset($_GET['page'])){
+  $page = $_GET['page'];
+}
+if($page ==''){
+  $page = 1;
+}
+$page = max($page,1);
+//試合数を表示
+$table = array();
+$sqll = 'SELECT COUNT(*) AS cnt FROM `names` WHERE 1';
+$record = mysqli_query($db,$sqll) or die(mysqli_error($db));
+$table = mysqli_fetch_assoc($record);
+$maxpage = ceil($table['cnt']/6);
+$page = min($page,$maxpage);
+$start = ($page - 1)*6;
+$start = max($start,0);
 
  //編集するための編集元の情報を表示
  if(isset($_GET['action'])&& ($_GET['action']=='edit')) {
@@ -43,7 +61,7 @@ try{
                  $newid = array();
                  $sq = 'SELECT `gameid` FROM `names` WHERE 1 ORDER BY `gameday` DESC LIMIT 1';
                  $stm = mysqli_query($db,$sq) or die(mysqli_error($db));
-                 $newid['gameid'] = mysqli_fetch_assoc($stm);
+                 $newid = mysqli_fetch_assoc($stm);
                  //最初の投稿を登録
                  $sqls = sprintf('INSERT INTO `results`SET `result`="%sの実況はじめます!", `years`="sunfriend", `date`=now(), `gameid`=%d',
                          mysqli_real_escape_string($db,$gname),
@@ -71,8 +89,8 @@ try{
 
   //最新投稿を取得
   $re = array();
-  $sq = 'SELECT `g1`.`result`,`g1`.`date`,`g1`.`gameid` FROM `results` as `g1`
-         WHERE `g1`.`date`=(SELECT MAX(`g2`.`date`) FROM `results` as `g2` WHERE `g2`.`gameid` = `g1`.`gameid`) ORDER BY `gameid` DESC';
+  $sq = sprintf('SELECT `g1`.`result`,`g1`.`date`,`g1`.`gameid` FROM `results` as `g1`
+         WHERE `g1`.`date`=(SELECT MAX(`g2`.`date`) FROM `results` as `g2` WHERE `g2`.`gameid` = `g1`.`gameid`) ORDER BY `date` DESC LIMIT %d,6',$start);
   $stmt = mysqli_query($db,$sq) or die(mysqli_error($db));
   while (1) {
     $req = mysqli_fetch_assoc($stmt);
@@ -82,15 +100,6 @@ try{
     $re[] =$req;
   }
 
-  //試合数を表示
-  $table = array();
-  $sqll = 'SELECT COUNT(*) AS cnt FROM `names` WHERE 1';
-  $record = mysqli_query($db,$sqll) or die(mysqli_error($db));
-  $table = mysqli_fetch_assoc($record);
-  echo $table['cnt'];
-
-  // var_dump($sun);
-  // var_dump($re);
   $dbh = null;
 
   ?>
@@ -121,7 +130,7 @@ try{
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
               </button>
-              <a class="navbar-brand" href="#page-top"><span class="strong-title"><i class="fa fa-sun-o"></i> Sun Friend!実況掲示板!</span></a>
+              <a class="navbar-brand" href="bbs.php"><span class="strong-title"><i class="fa fa-sun-o"></i> Sun Friend!実況掲示板!</span></a>
           </div>
           <!-- Collect the nav links, forms, and other content for toggling -->
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -175,8 +184,18 @@ try{
       <?php } ?>
       <br>
       <br>
-      <p><a href="bbs.php?page=<?php echo "a"; ?>" class="btn btn-default">以前の投稿へ</a>
-      <a href="bbs.php?page=<?php echo "b"; ?>" class="btn btn-default">最新の投稿へ</a></p>
+      <p>
+      <?php if ($page<$maxpage){ ?>
+      <a href="bbs.php?page=<?php echo ($page + 1); ?>" class="btn btn-default">以前の投稿へ</a>
+      <?php }else{ ?>
+      最終ページだよ
+      <?php } ?>
+      <?php if ($page>1) { ?>
+      <a href="bbs.php?page=<?php echo ($page - 1); ?>" class="btn btn-default">最新の投稿へ</a>
+      <?php }else{ ?>
+      最新のページだよ
+      <?php } ?>
+      </p>
     </form>
 
 

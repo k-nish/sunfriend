@@ -7,9 +7,28 @@ try{
 }
 
   $id ='';
-  if (isset($_GET)&&!empty($_GET)) {
+  if (isset($_GET['id'])&&!empty($_GET)) {
     $id = $_GET['id'];
   }
+
+  //ページング処理
+  $page ='';
+  if (isset($_GET['page'])) {
+    $page = $_GET['page'];
+  }
+  if ($page=='') {
+    $page = 1;
+  }
+  $page = max($page,1);
+  $table = array();
+  $s = sprintf('SELECT COUNT(*) AS cnt FROM `results` WHERE `gameid`= %d',
+          mysqli_real_escape_string($db,$id));
+  $stmt = mysqli_query($db,$s) or die(mysqli_error($db));
+  $table = mysqli_fetch_assoc($stmt);
+  $maxpage = ceil($table['cnt'] / 6);
+  $page = min($page,$maxpage);
+  $start = ($page -1) * 6;
+  $start = max($start,0);
 
   $error = array();
   if(isset($_POST) && !empty($_POST)){
@@ -30,8 +49,9 @@ try{
       }
   }
 
-  $sql = sprintf('SELECT * FROM `results` WHERE gameid = "%d" ORDER BY `id` DESC',
-    mysqli_real_escape_string($db,$id));
+  $sql = sprintf('SELECT * FROM `results` WHERE gameid = "%d" ORDER BY `id` DESC LIMIT %d,6',
+    mysqli_real_escape_string($db,$id),
+    mysqli_real_escape_string($db,$start));
   $stmt = mysqli_query($db,$sql) or die(mysqli_error($db));
   $posts = array();
   while(1){
@@ -100,7 +120,7 @@ try{
           <!-- /.navbar-collapse -->
       </div>
       <!-- /.container-fluid -->
-  </nav> 
+  </nav>
   <div class="container">
     <div class="row">
       <div class="col-md-4 content-margin-top">
@@ -147,6 +167,20 @@ try{
       <h5>実況投稿!</h5>
       <input type="hidden" name="id" value=<?php echo h($id); ?>>
       <button type="submit"  name='report' class="btn btn-danger col-xs-12" disabled>実況する!</button>
+      <br>
+      <br>
+      <p>
+      <?php if ($page<$maxpage){ ?>
+      <a href="kekka.php?page=<?php echo ($page + 1); ?>&id=<?php echo $id; ?>" class="btn btn-default">以前の投稿へ</a>
+      <?php }else{ ?>
+      最終ページだよ
+      <?php } ?>
+      <?php if ($page>1) { ?>
+      <a href="kekka.php?page=<?php echo ($page - 1); ?>&id=<?php echo $id; ?>" class="btn btn-default">最新の投稿へ</a>
+      <?php }else{ ?>
+      最新のページだよ
+      <?php } ?>
+      </p>
     </form>
 
       </div>
@@ -166,18 +200,17 @@ try{
                 </div>
 
                 <div class="timeline-label">
-                    <h2><a href="#"><?php echo h($post['years']);?></a> 
+                    <h2><a href="#"><?php echo h($post['years']);?></a>
                       <?php
                           //一旦日時型に変換
                           $date = strtotime($post['date']);
                           //書式を変換
-                          $date = date('Y/m/d',$date);                          
+                          $date = date('Y/m/d',$date);
                       ?>
 
                       <span><?php echo h($date);?></span>
                     </h2>
                     <p><Font size="4"><strong><?php echo h($post['result']);?><strong></br></p>
-                    
             </div>
 
         </article>
