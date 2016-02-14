@@ -38,7 +38,7 @@ $pass = $rec['toukou'];
 
   $error = array();
   if(isset($_POST) && !empty($_POST)){
-      if(mb_convert_kana($_POST['key'],'r','UTF-8')=='sun'){
+      if(mb_convert_kana($_POST['key'],'r','UTF-8')==$pass){
           $kresult = mb_convert_kana($_POST['result'],'sa','UTF-8');
           $kyears = mb_convert_kana($_POST['years'],'sa','UTF-8');
           $sql = sprintf('INSERT INTO `results`(`id`, `result`, `years`, `date`, `gameid`)
@@ -49,7 +49,7 @@ $pass = $rec['toukou'];
           $stmt = mysqli_query($db,$sql) or die(mysqli_error($db));
           $id=$_POST['id'];
           header('Location: kekka.php?id='.$id);
-      }elseif(mb_convert_kana($_POST['key'],'r','UTF-8') !='sun'){
+      }elseif(mb_convert_kana($_POST['key'],'r','UTF-8') !=$pass){
           $error['key'] = 'wrong';
           $id=$_POST['id'];
       }
@@ -240,7 +240,7 @@ $pass = $rec['toukou'];
 
     </div>
   </div>
- 
+
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   <!-- Include all compiled plugins (below), or include individual files as needed -->
