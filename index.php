@@ -83,7 +83,7 @@ if (isset($_POST['pass'])&&$_POST['pass']=='') {
 
     <form action="index.php" method="post">
       <div class="form-group">
-          <h5>ID</h5>
+          <h1>ID</h1>
             <div class="input-group">
               <input type="text" name="id" class="form-control"
                        id="validate-text" placeholder="ID" required>
@@ -94,7 +94,7 @@ if (isset($_POST['pass'])&&$_POST['pass']=='') {
             <?php endif; ?>
       </div>
       <div class="form-group">
-              <h5>Password</h5>
+              <h1>Password</h1>
                   <div class="input-group" data-validate="length" data-length="3">
                   <input type="text" class="form-control" name="pass" id="validate-length" placeholder="当ててみろ!" required>
                   <span class="input-group-addon danger"><span class="glyphicon glyphicon-remove"></span></span>

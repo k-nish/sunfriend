@@ -184,9 +184,9 @@ try{
                           $date = date('Y/m/d',$date);
                       ?>
 
-                      <span><?php echo h($date);?></span>
+                      <span style="font-size:20px"><?php echo h($date);?></span>
                     </h2>
-                    <p><Font size="4"><strong><?php echo h($post['result']);?><strong></br>
+                    <p><strong><?php echo h($post['result']);?><strong></br>
                       <a href="#" onclick="destroy(<?php echo h($post['id']); ?>)"><i class="fa fa-trash-o"></i></a>
                     </p>
 

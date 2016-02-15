@@ -133,7 +133,7 @@ $pass = $rec['toukou'];
 
     <form action="kekka.php?id=<?php echo h($id); ?>" method="post">
       <div class="form-group">
-            <h5>学年(何か書いてね)</h5>
+            <h1>学年(何か書いてね)</h1>
             <div class="input-group">
               <?php if (isset($error['key'])&&($error['key']=='wrong')) { ?>
                 <input type="text" name="years" class="form-control"
@@ -147,7 +147,7 @@ $pass = $rec['toukou'];
 
       </div>
       <div class="form-group">
-            <h5>結果(何か入力してね)</h5>
+            <h1>結果(何か入力してね)</h1>
             <div class="input-group" data-validate="length" data-length="1">
               <?php if (isset($error['key'])&&($error['key']=='wrong')) { ?>
               <input type="text" class="form-control" name="result" id="validate-length"
@@ -159,7 +159,7 @@ $pass = $rec['toukou'];
             </div>
       </div>
       <div class="form-group">
-            <h5>投稿キー</h5>
+            <h1>投稿キー</h1>
             <div class="input-group">
               <input type="text" name="key" class="form-control"
                        id="validate-text" placeholder="今回もヒントは。。。。ないぜ" required>
@@ -170,7 +170,7 @@ $pass = $rec['toukou'];
             <p class="error">*正しい投稿キーを入れてください。</p>
             <?php } ?>
       </div>
-      <h5>実況投稿!</h5>
+      <!-- <h5>実況投稿!</h5> -->
       <input type="hidden" name="id" value=<?php echo h($id); ?>>
       <button type="submit"  name='report' class="btn btn-danger col-xs-12" disabled>実況する!</button>
       <br>
@@ -214,9 +214,9 @@ $pass = $rec['toukou'];
                           $date = date('Y/m/d',$date);
                       ?>
 
-                      <span><?php echo h($date);?></span>
+                      <span style="font-size:20px"><?php echo h($date);?></span>
                     </h2>
-                    <p><Font size="4"><strong><?php echo h($post['result']);?><strong></br></p>
+                    <p><strong><?php echo h($post['result']);?><strong></br></p>
             </div>
 
         </article>

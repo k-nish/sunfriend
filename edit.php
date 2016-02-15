@@ -169,7 +169,7 @@ if(isset($_POST)&&!empty($_POST)){
 
     <form action="edit.php" method="post">
       <div class="form-group">
-          <h5>試合名</h5>
+          <h1>試合名</h1>
             <div class="input-group">
               <?php if (isset($error['key'])&&($error['key']=='wrong')) { ?>
               <input type="text" name="gamename" class="form-control"
@@ -182,7 +182,7 @@ if(isset($_POST)&&!empty($_POST)){
             </div>
       </div>
       <div class="form-group">
-              <h5>投稿キー</h5>
+              <h1>投稿キー</h1>
                   <div class="input-group" data-validate="length" data-length="3">
                   <input type="text" class="form-control" name="key" id="validate-length" placeholder="投稿キー  ヒントは...." required></textarea>
                   <span class="input-group-addon danger"><span class="glyphicon glyphicon-remove"></span></span>
@@ -241,10 +241,10 @@ if(isset($_POST)&&!empty($_POST)){
                           //書式を変換
                           $gameday = date('Y/m/d',$gameday);
                       ?>
-                      <span><?php echo h($gameday);?></span>
+                      <span style="font-size:20px"><?php echo h($gameday);?></span>
                       <a href="bbs.php?action=edit&id=<?php echo h($po['gameid']); ?>"><i class="fa fa-pencil-square-o"></i>
                       <a href="#" onclick="destroy(<?php echo h($post['gameid']);?>)"><i class="fa fa-trash-o"></i></a>
-                      <p><a href="kekka.php?id=<?php echo h($po['gameid']); ?>">最新投稿:<Font size="3"><strong><?php echo h($po['result']); ?><strong></p>
+                      <p><a href="kekka.php?id=<?php echo h($po['gameid']); ?>">最新投稿:<strong><?php echo h($po['result']); ?><strong></p>
                     </h2>
             </div>
 
