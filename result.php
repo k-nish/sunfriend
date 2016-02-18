@@ -124,7 +124,7 @@ try{
   </nav>
   <div class="container">
     <div class="row">
-      <div class="col-md-4 content-margin-top">
+      <div class="col-md-5 content-margin-top">
 
     <!-- <form action="result.php&id=<?php echo h($id); ?>" method="post">
       <div class="form-group">
@@ -160,7 +160,7 @@ try{
     </form> -->
 
       </div>
-      <div class="col-md-8 content-margin-top">
+      <div class="col-md-7 content-margin-top">
         <div class="timeline-centered">
         <?php
         foreach ($posts as $post) { ?>

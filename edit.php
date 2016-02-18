@@ -165,7 +165,7 @@ if(isset($_POST)&&!empty($_POST)){
   </nav>
   <div class="container">
     <div class="row">
-      <div class="col-md-4 content-margin-top">
+      <div class="col-md-5 content-margin-top">
 
     <form action="edit.php" method="post">
       <div class="form-group">
@@ -213,7 +213,7 @@ if(isset($_POST)&&!empty($_POST)){
 
       </div>
 
-      <div class="col-md-8 content-margin-top">
+      <div class="col-md-7 content-margin-top">
 
         <div class="timeline-centered">
 

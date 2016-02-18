@@ -129,7 +129,7 @@ $pass = $rec['toukou'];
   </nav>
   <div class="container">
     <div class="row">
-      <div class="col-md-4 content-margin-top">
+      <div class="col-md-5 content-margin-top">
 
     <form action="kekka.php?id=<?php echo h($id); ?>" method="post">
       <div class="form-group">
@@ -191,7 +191,7 @@ $pass = $rec['toukou'];
 
       </div>
       <!--<h3>実況なう!</h3>-->
-      <div class="col-md-8 content-margin-top">
+      <div class="col-md-7 content-margin-top">
         <!--<h3>実況なう!</h3>-->
         <div class="timeline-centered">
         <?php

@@ -154,7 +154,7 @@ $start = max($start,0);
   </nav>
   <div class="container">
     <div class="row">
-      <div class="col-md-4 content-margin-top">
+      <div class="col-md-5 content-margin-top">
 
     <form action="bbs.php" method="post">
       <div class="form-group">
@@ -206,7 +206,7 @@ $start = max($start,0);
 
       </div>
 
-      <div class="col-md-8 content-margin-top">
+      <div class="col-md-7 content-margin-top">
       <!--<p><strong>青のボタンを押すと各試合の実況が見れます!<strong></p>-->
         <div class="timeline-centered">
 
