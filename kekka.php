@@ -118,9 +118,6 @@ $pass = $rec['toukou'];
                   <li class="page-scroll">
                       <a href="check.php">編集用ページへ</a>
                   </li>
-                  <!-- <li class="page-scroll">
-                      <a href="#contact">Contact</a>
-                  </li> -->
               </ul>
           </div>
           <!-- /.navbar-collapse -->

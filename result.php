@@ -113,9 +113,6 @@ try{
                   <li class="page-scroll">
                       <a href="edit.php">編集用ページへ</a>
                   </li>
-                  <!-- <li class="page-scroll">
-                      <a href="#contact">Contact</a>
-                  </li> -->
               </ul>
           </div>
           <!-- /.navbar-collapse -->

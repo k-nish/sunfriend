@@ -154,9 +154,6 @@ if(isset($_POST)&&!empty($_POST)){
                   <li class="page-scroll">
                       <a href="check.php">編集用ページ</a>
                   </li>
-                  <!-- <li class="page-scroll">
-                      <a href="#contact">Contact</a>
-                  </li> -->
               </ul>
           </div>
           <!-- /.navbar-collapse -->
